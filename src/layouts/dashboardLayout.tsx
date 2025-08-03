@@ -1,0 +1,231 @@
+import React from 'react';
+import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { FaHome, FaLock, FaSignOutAlt, FaUserGraduate, FaUserTie, FaList, FaCoins, FaUser, FaCog, FaUsers, FaCalendar } from "react-icons/fa";
+import { FaBell } from "react-icons/fa";
+import Images from '@/components/images';
+
+const DashboardLayout: React.FC = () => {
+  const { pathname } = useLocation();
+  
+  // Determine if we're in admin or student route
+  const isAdminRoute = pathname.includes('/admin');
+  const isStudentRoute = pathname.includes('/students');
+  console.log(isStudentRoute);
+  
+  const adminNavData = [
+    { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
+    { id: 2, name: "Students", icon: <FaUserGraduate />, URL: "students" },
+    { id: 3, name: "Leadership", icon: <FaUserTie />, URL: "leaderships" },
+    { id: 4, name: "Regional Club", icon: <FaList />, URL: "regional-club" },
+    { id: 5, name: "Bridge Points", icon: <FaCoins />, URL: "bridge-points" },
+    { id: 6, name: "Profile", icon: <FaUser />, URL: "profile" },
+  ];
+
+  const studentNavData = [
+    { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
+    { id: 2, name: "Meetings", icon: <FaCalendar />, URL: "meetings" },
+    { id: 3, name: "Calendar", icon: <FaCalendar />, URL: "calendar" },
+    { id: 3, name: "Clubs", icon: <FaUsers />, URL: "clubs" },
+    { id: 4, name: "Points", icon: <FaCoins />, URL: "points" },
+    { id: 5, name: "Profile", icon: <FaUser />, URL: "profile" },
+  ];
+
+  // Use appropriate navigation data based on route
+  const navData = isAdminRoute ? adminNavData : studentNavData;
+  const basePath = isAdminRoute ? "/admin" : "/students";
+  const greeting = isAdminRoute ? "Hello Admin 👋" : "Hello Michele 👋";
+
+  const siderBarView = true; 
+  const handleStart = pathname.split("/")[1] === "" ? true : false;
+
+  
+  return (
+    <div className="wrapper min-h-screen">
+      <header className="main-header border-b border-gray-200 bg-[#F9FAFB] fixed! w-full">
+        <div className="d-flex align-items-center logo-box justify-content-start fixed">        
+          <Link to="/" className="logo flex! items-center justify-center">
+            {/* logo*/}
+            <div className="logo-lg">
+              <span className="light-logo">
+                <img src={Images.logo} className='w-[180px]' alt="logo" />
+              </span>              
+            </div>
+          </Link>
+        </div>
+        {/* Header Navbar */}
+        <nav className="navbar navbar-static-top">
+          {/* Sidebar toggle button*/}
+          <div className="">
+            <div className="text-[#5A5959] text-2xl font-semibold">
+               {greeting}
+            </div>
+          </div>
+          <div className="navbar-custom-menu r-side">
+            <ul className="nav navbar-nav">
+              <li className="btn-group d-lg-inline-flex d-none">
+                <div className="app-menu">
+                  <div className="search-bx mx-5">
+                    <form>
+                      <div className="input-group">
+                        <input
+                          type="search"
+                          className="form-control"
+                          placeholder="Search"
+                          aria-label="Search"
+                          aria-describedby="button-addon2"
+                        />
+                        <div className="input-group-append">
+                          <button className="btn" type="submit" id="button-addon3">
+                            <i className="ti-search" />
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </li>
+              {/* Notifications */}
+              <li className="dropdown notifications-menu">
+                <Link
+                  to="#"
+                  className="waves-effect waves-light dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  title="Notifications"
+                >
+                  <FaBell className='text-[#5A5959]' />
+                </Link>
+                <ul className="dropdown-menu animated bounceIn">
+                  <li className="header">
+                    <div className="p-20">
+                      <div className="flexbox">
+                        <div>
+                          <h4 className="mb-0 mt-0">Notifications</h4>
+                        </div>
+                        <div>
+                          <Link to="#" className="text-danger">
+                            Clear All
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    {/* inner menu: contains the actual data */}
+                    <ul className="menu sm-scrol">
+                      <li>
+                        <Link to="#">
+                          <i className="fa fa-users text-info" /> Curabitur id eros
+                          quis nunc suscipit blandit.
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="#">
+                          <i className="fa fa-warning text-warning" /> Duis
+                          malesuada justo eu sapien elementum, in semper diam
+                          posuere.
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="#">
+                          <i className="fa fa-user text-success" /> Nullam euismod
+                          dolor ut quam interdum, at scelerisque ipsum imperdiet.
+                        </Link>
+                      </li>
+                    </ul>
+                  </li>
+                  <li className="footer">
+                    <Link to="#">View all</Link>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </header>
+      <aside className="main-sidebar border-r border-gray-200 fixed bg-[#F9FAFB]">
+        {/* sidebar*/}
+        <section className="sidebar position-relative">
+          <div className="multinav">
+            <div className="multinav-scroll" style={{ height: "100%" }}>
+              {/* sidebar menu*/}
+              <ul className="sidebar-menu" data-widget="tree">
+                {navData.map((item, index) => (
+                  <li className="treeview" key={item.id}>
+                    <NavLink
+                      to={`${basePath}/${item.URL}`}
+                      children={({ isActive }) => (
+                        <div
+                          className={`
+                            ${index === 0 && handleStart ? "text-[#F9607F] bg-[#f6e8eb]" : ""}
+                            flex items-center font-[400] transition-all duration-300 py-3 px-2 my-0 overflow-hidden capitalize 
+                            ${siderBarView ? `${handleStart && "px-2 mx-2 rounded-xl transition-all duration-500"}` : "rounded-full w-10 h-10 flex justify-center items-center pl-2"}
+                            ${
+                              isActive
+                                ? "text-[#F9607F] bg-[#f6e8eb]  rounded-xl"
+                                : "hover:bg-[#eef2ff] text-[#172b4c] hover:text-[#7D8489]"
+                            }
+                          `}
+                        >
+                          <span className="mr-3 text-xl">{item.icon}</span>
+                          {siderBarView  && <span className='text-lg'>{item.name}</span>}
+                        </div>
+                      )}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+        <div className="sidebar-footer">
+          <Link
+            to="#"
+            className="link"
+            data-bs-toggle="tooltip"
+            title="Settings"
+          >
+            <FaCog />
+          </Link>
+          <Link
+            to="#"
+            className="link"
+            data-bs-toggle="tooltip"
+            title="Settings"
+          >
+            <FaLock />
+          </Link>
+          <Link
+            to="#"
+            className="link"
+            data-bs-toggle="tooltip"
+            title="Logout"
+          >
+            <FaSignOutAlt />
+          </Link>
+        </div>
+      </aside>
+      <div className="content-wrapper mt-25!">
+        <div className="container-full p-15">
+          <Outlet />
+        </div>
+      </div>
+
+      <footer className="main-footer">
+        <div className="pull-right d-none d-sm-inline-block">
+          <ul className="nav nav-primary nav-dotted nav-dot-separated justify-content-center justify-content-md-end">
+            <li className="nav-item">
+              <Link className="nav-link" to="#">
+                FAQ
+              </Link>
+            </li>            
+          </ul>
+        </div>
+        © 2024 <Link to="#">Leadership</Link>.
+        All Rights Reserved.
+      </footer>
+    </div>
+  );
+};
+
+export default DashboardLayout;
