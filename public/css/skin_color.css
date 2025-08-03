@@ -1,0 +1,58 @@
+/* Skin Color Theme */
+:root {
+  --primary-color: #F9607F;
+  --secondary-color: #6c757d;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+  --light-color: #f8f9fa;
+  --dark-color: #343a40;
+}
+
+/* Primary color overrides */
+.bg-primary {
+  background-color: var(--primary-color) !important;
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: #e54d6a;
+  border-color: #e54d6a;
+}
+
+/* Link colors */
+a {
+  color: var(--primary-color) !important;
+}
+
+a:hover {
+  color: #e54d6a !important;
+}
+
+/* Form elements */
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.2rem rgba(249, 96, 127, 0.25);
+}
+
+/* Custom theme colors */
+.theme-primary {
+  color: var(--primary-color);
+}
+
+.theme-bg-primary {
+  background-color: var(--primary-color);
+}
+
+.theme-border-primary {
+  border-color: var(--primary-color);
+} 
