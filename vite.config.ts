@@ -39,7 +39,21 @@ export default defineConfig(({ mode }) => {
             secure: false,
             rewrite: (path) => path
           },
-     
+        '/maps': {
+          target: 'https://maps.googleapis.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/maps/, ''),
+          secure: false,
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        },
+        '/wallet': {
+          target: 'https://resq-wallet.onrender.com/',
+          changeOrigin: true,
+          secure: false,
+          rewrite: (path) => path.replace(/^\/wallet/, '/admins')
+        }
       }
     },
 
