@@ -26,6 +26,10 @@ html {
   height: 100%;
   font-size: 14px; }
 
+a {
+    text-decoration: none !important;
+}
+
 body {
   height: 100%; }
   body.layout-boxed {
