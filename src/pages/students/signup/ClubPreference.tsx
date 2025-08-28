@@ -1,69 +1,48 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Button, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useOnboardingStore } from "@/global/store";
+import { useClubCategories } from "@/hooks/useEnums";
 
-// Club list array with categories and clubs
-const clubOptions = [
-  {
-    label: "Stem-Focused Clubs",
-    field: "stem_focused_club",
-    options: [
-      { label: "Code for Change - Empowers teens to build real-world tech solutions through beginner-friendly coding, collaboration, and creative problem-solving", value: "code_for_change" },
-      { label: "Women in STEM Circle - Uplifts girls in STEM through mentorship, speakers, and a zine.", value: "women_in_stem" },
-      { label: "Space & Astronomy Club - Explores the cosmos and produces space-themed blog and media.", value: "space_astronomy" },
-      { label: "Health & Bioethics Circle - Writes and discusses health justice and bioethics topics online.", value: "health_bioethics" },
-    ],
-  },
-  {
-    label: "Creative & Cultural Clubs",
-    field: "creative_cultural_club",
-    options: [
-      { label: "Crochet & Fiber Arts Club - Hosts stitch circles and creates photo essays and visuals.", value: "crochet_fiber_arts" },
-      { label: "Poetry & Prose Circle - Publishes original poems, short stories, and spoken word.", value: "poetry_prose" },
-      { label: "Visual Art & Illustration Club - Designs art for campaigns, zines, and social media.", value: "visual_art_illustration" },
-      { label: "Music Production & Performance Club - Produces Bridginality's soundtrack and intros.", value: "music_production" },
-      { label: "Culinary Cultures Club - Shares recipes, food identity stories, and tutorial videos.", value: "culinary_cultures" },
-      { label: "Language Exchange & Linguistics Club - Leads language sessions and translates content.", value: "language_exchange" },
-    ],
-  },
-  {
-    label: "Civic & Intellectual Clubs",
-    field: "civic_intellectual_club",
-    options: [
-      { label: "Story Circles – A safe space for students to share personal experiences and resilience.", value: "story_circles" },
-      { label: "Model United Nations (MUN)– Simulates global policy and debates; shares audio/video content.", value: "mun" },
-      { label: "Debate & Public Speaking Club – Hosts live debates, speeches, and uploads reels.", value: "debate_public_speaking" },
-      { label: "Journalism & Op-Ed Writing Club – Manages blog content, op-eds, and youth journalism.", value: "journalism_oped" },
-      { label: "Human Rights & Advocacy Club – Collaborates on campaigns and youth justice topics.", value: "human_rights_advocacy" },
-    ],
-  },
-  {
-    label: "Innovation & Life Skill Clubs",
-    field: "innovation_life_skill_club",
-    options: [
-      { label: "Entrepreneurship & Innovation Club – Features youth-run businesses and founders.", value: "entrepreneurship_innovation" },
-      { label: "Finance & Investing for Teens – Teaches money basics and produces a 'Money Talks' column.", value: "finance_investing" },
-      { label: "Study Skills & Productivity Circle – Shares planners, templates, and productivity hacks.", value: "study_skills_productivity" },
-    ],
-  },
-];
+
 
 const ClubPreference = () => {
-  const { setNavPath } = useOnboardingStore();
+  const { setNavPath, studentSignupData, setStudentSignupData } = useOnboardingStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
-  const navPath = useOnboardingStore();
   const navigate = useNavigate()
+  const {data : clubs} = useClubCategories()
+
+  const clubOptions =
+  clubs?.data?.map((category:any) => ({
+    label: category?.name,
+    field: category?.name.toLowerCase().replace(/ & | /g, "_") + "_club",
+    options: category?.clubs?.map((club:any) => ({
+      label: `${club?.name} `,
+      value: club?.id,
+    })),
+  })) || [];
+
+  useEffect(() => {
+    // Load existing data if available
+    if (studentSignupData?.clubPreference) {
+      form.setFieldsValue(studentSignupData.clubPreference);
+    }
+  }, [form, studentSignupData?.clubPreference]);
+
   const onFinish = async (values: any) => {
     
     try {
       setLoading(true);
-      // Mock or replace this with actual API call logic if needed
+      
+      // Save data to store
+      setStudentSignupData("clubPreference", values);
+      
       console.log("Form values:", values);
-      toast.success("Form submitted successfully");
+      toast.success("Club preferences saved successfully");
+      
       // Redirect to next section
       setNavPath("experience");
       navigate('/signup')
@@ -84,7 +63,7 @@ const ClubPreference = () => {
         </div>
         <div className="p-0">
           <Form layout="vertical" form={form} onFinish={onFinish} className="row">
-            {clubOptions.map((category) => (
+            {clubOptions.map((category:any) => (
               <div className="col-md-12" key={category.field}>
                 <Form.Item
                   name={category.field}
@@ -105,7 +84,8 @@ const ClubPreference = () => {
                 <Button
                   type="default"
                   onClick={() => {
-                    navPath.setNavPath("basic-info");   
+                    setNavPath("basic-info");   
+                    navigate('/signup');
                   }}               
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >
@@ -117,7 +97,7 @@ const ClubPreference = () => {
                   loading={loading}
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >
-                  Submit & Continue
+                  Save & Continue
                 </Button>
               </div>
             </Form.Item>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Button, Select } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -7,18 +7,24 @@ import { useLeadershipStore } from "@/global/leadershipStore";
 
 
 const Availability = () => {
-  const { setNavPath } = useLeadershipStore();
+  const { setNavPath, setLeadershipSignupData, leadershipSignupData } = useLeadershipStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   const navPath = useLeadershipStore();
 
+  useEffect(() => {
+    // Load existing data if available
+    if (leadershipSignupData?.availability) {
+      form.setFieldsValue(leadershipSignupData.availability);
+    }
+  }, [form, leadershipSignupData?.availability]);
 
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
-      console.log("Form values:", values);
-      toast.success("Form submitted successfully");
+      setLeadershipSignupData("availability", values);
+      toast.success("Availability saved");
       setNavPath("leadership-club-preference");
       navigate('/leadership/signup');
     } catch (error) {

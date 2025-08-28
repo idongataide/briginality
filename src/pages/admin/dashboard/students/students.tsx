@@ -1,138 +1,111 @@
-import { Table, Button, Space } from 'antd';
+import { Table, Button, Space, message } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
+import { SearchOutlined, EyeOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import type { FC } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useApplicants, useApproveClubApplication, useRejectClubApplication } from '@/hooks/useAdmin';
+import ConfirmationModal from '@/components/DeleteConfirmationModal';
+import RejectConfirmationModal from '@/components/RejectConfirmationModal';
 
 interface StudentData {
   key: string;
-  fullName: string;
+  id: number;
+  name: string;
+  email: string;
   age: number;
   guardianEmail: string;
   pronouns?: string;
   country: string;
   homeschoolStatus: string;
-  region: string;
+  region_name: string;
   dateJoined: string;
   clubs: string[];
   experience: string;
   expectations: string;
   accessibilityNeeds: string;
   participationNeeds: string;
+  status: string;
+  submitted_at: string;
 }
-
-const data: StudentData[] = [
-  {
-    key: '1',
-    fullName: 'Oscar Adetona',
-    age: 15,
-    guardianEmail: 'oscar.guardian@email.com',
-    pronouns: 'He/Him',
-    country: 'Nigeria',
-    homeschoolStatus: 'homeschooled',
-    region: 'afro-euro',
-    dateJoined: 'Thur, 14/08/24 2:30pm',
-    clubs: ['code_for_change', 'poetry_prose', 'mun', 'entrepreneurship_innovation'],
-    experience: '3 years',
-    expectations: 'I hope to gain new friends and learn coding skills while socializing with like-minded peers.',
-    accessibilityNeeds: 'No',
-    participationNeeds: 'No'
-  },
-  {
-    key: '2',
-    fullName: 'Sarah Johnson',
-    age: 14,
-    guardianEmail: 'sarah.parent@email.com',
-    pronouns: 'She/Her',
-    country: 'United States',
-    homeschoolStatus: 'non-traditional',
-    region: 'amerisphere',
-    dateJoined: 'Mon, 12/08/24 10:15am',
-    clubs: ['women_in_stem', 'visual_art_illustration', 'human_rights_advocacy', 'finance_investing'],
-    experience: '2 years',
-    expectations: 'Looking to develop leadership skills and connect with other creative students.',
-    accessibilityNeeds: 'Yes',
-    participationNeeds: 'No'
-  },
-  {
-    key: '3',
-    fullName: 'Aarob Constructions',
-    age: 16,
-    guardianEmail: 'aarob.family@email.com',
-    pronouns: 'They/Them',
-    country: 'Canada',
-    homeschoolStatus: 'traditional',
-    region: 'amerisphere',
-    dateJoined: 'Wed, 10/08/24 3:45pm',
-    clubs: ['space_astronomy', 'music_production', 'debate_public_speaking', 'study_skills_productivity'],
-    experience: '1 year',
-    expectations: 'Want to improve public speaking skills and learn about space science.',
-    accessibilityNeeds: 'No',
-    participationNeeds: 'Yes'
-  },
-  {
-    key: '4',
-    fullName: 'Musa Garki',
-    age: 13,
-    guardianEmail: 'musa.parent@email.com',
-    country: 'Ghana',
-    homeschoolStatus: 'homeschooled',
-    region: 'afro-euro',
-    dateJoined: 'Tue, 09/08/24 1:20pm',
-    clubs: ['health_bioethics', 'culinary_cultures', 'journalism_oped', 'finance_investing'],
-    experience: '4 years',
-    expectations: 'Interested in journalism and learning about different cultures through food.',
-    accessibilityNeeds: 'No',
-    participationNeeds: 'No'
-  },
-  {
-    key: '5',
-    fullName: 'Roy Crambell',
-    age: 15,
-    guardianEmail: 'roy.guardian@email.com',
-    pronouns: 'He/Him',
-    country: 'United Kingdom',
-    homeschoolStatus: 'non-traditional',
-    region: 'afro-euro',
-    dateJoined: 'Fri, 08/08/24 4:10pm',
-    clubs: ['code_for_change', 'crochet_fiber_arts', 'story_circles', 'entrepreneurship_innovation'],
-    experience: '2.5 years',
-    expectations: 'Looking to build a community and develop entrepreneurial skills.',
-    accessibilityNeeds: 'Yes',
-    participationNeeds: 'Yes'
-  },
-  {
-    key: '6',
-    fullName: 'Feyl Ayobami',
-    age: 14,
-    guardianEmail: 'feyl.parent@email.com',
-    country: 'Kenya',
-    homeschoolStatus: 'homeschooled',
-    region: 'afro-euro',
-    dateJoined: 'Sat, 07/08/24 11:30am',
-    clubs: ['women_in_stem', 'language_exchange', 'mun', 'study_skills_productivity'],
-    experience: '3 years',
-    expectations: 'Want to improve language skills and participate in global discussions.',
-    accessibilityNeeds: 'No',
-    participationNeeds: 'No'
-  },
-];
-
 
 const Students: FC = () => {
 
+  const navigate = useNavigate();
+  const { data: StudentData, mutate } = useApplicants();
+  const { approveApplication } = useApproveClubApplication();
+  const { rejectApplication } = useRejectClubApplication();
+  
+  const [approveModalVisible, setApproveModalVisible] = useState(false);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<StudentData | null>(null);
+  const [loading, setLoading] = useState(false);
 
+  const handleApprove = async () => {
+    if (!selectedApplication) return;
+    
+    setLoading(true);
+    try {
+      await approveApplication(selectedApplication.id.toString());
+      message.success('Application approved successfully');
+      mutate(); // Refresh the data
+      setApproveModalVisible(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      message.error('Failed to approve application');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReject = async (notes: string) => {
+    if (!selectedApplication) return;
+    
+    setLoading(true);
+    try {
+      await rejectApplication(selectedApplication.id.toString(), notes);
+      message.success('Application rejected successfully');
+      mutate(); // Refresh the data
+      setRejectModalVisible(false);
+      setSelectedApplication(null);
+    } catch (error) {
+      message.error('Failed to reject application');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openApproveModal = (record: StudentData) => {
+    setSelectedApplication(record);
+    setApproveModalVisible(true);
+  };
+
+  const openRejectModal = (record: StudentData) => {
+    setSelectedApplication(record);
+    setRejectModalVisible(true);
+  };
+
+  const handleViewProfile = (studentId: number) => {
+    navigate(`/admin/students/${studentId}`);
+  };
 
   const columns: ColumnsType<StudentData> = [
     {
       title: 'S/N',
-      dataIndex: 'key',
-      key: 'key',
+      dataIndex: 'id',
+      key: 'id',
       render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
     },
     {
       title: 'Full Name',
-      dataIndex: 'fullName',
-      key: 'fullName',
+      dataIndex: 'name',
+      key: 'name',
+      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+    },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
       render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
     },
     {
@@ -143,23 +116,44 @@ const Students: FC = () => {
     },
     {
       title: 'Region',
-      dataIndex: 'region',
-      key: 'region',
-      render: (region) => {
-        const regionLabels: { [key: string]: string } = {
-          'afro-euro': 'AfroEuro',
-          'amerisphere': 'AmeriSphere',
-          'asialume': 'AsiaLume'
-        };
-        return <span className="text-[#667085] font-[500]">{regionLabels[region] || region}</span>;
+      dataIndex: 'region_name',
+      key: 'region_name',
+      render: (region_name) => {        
+        return <span className="text-[#667085] font-[500]">{region_name}</span>;
       },
     },
     {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      render: (status) => {
+        const statusConfig = {
+          pending: { color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200' },
+          approved: { color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' },
+          rejected: { color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' }
+        };
+        
+        const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+        const statusText = status?.charAt(0).toUpperCase() + status?.slice(1) || 'Pending';
+        
+        return (
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color} ${config.bg} ${config.border}`}>
+            {statusText}
+          </span>
+        );
+      },
+      filters: [
+        { text: 'Pending', value: 'pending' },
+        { text: 'Approved', value: 'approved' },
+        { text: 'Rejected', value: 'rejected' }
+      ],
+      onFilter: (value, record) => record.status === value,
+    },
+    {
       title: 'Date Joined',
-      dataIndex: 'dateJoined',
-      key: 'dateJoined',
-      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
-      sorter: (a, b) => new Date(a.dateJoined).getTime() - new Date(b.dateJoined).getTime(),
+      dataIndex: 'submitted_at',
+      key: 'submitted_at',
+      render: (submitted_at) => <span className="text-[#667085] font-[500]">{submitted_at}</span>,
     },
     {
       title: 'Actions',
@@ -169,12 +163,56 @@ const Students: FC = () => {
           <Button
             type="primary"
             size="small"
-            onClick={() => window.open(`/admin/students/${record.key}`)}
+            onClick={() => handleViewProfile(record.id)}
             className="border-blue-500 text-blue-500 hover:bg-blue-50"
           >
             <EyeOutlined className="mr-2" />
             Full Profile
           </Button>
+          {record.status === 'pending' && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => openApproveModal(record)}
+              className="border-green-500 bg-green-600! text-white! hover:bg-green-50"
+              icon={<CheckOutlined />}
+            >
+              Approve
+            </Button>
+          )}
+          {record.status === 'pending' && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => openRejectModal(record)}
+              className="border-red-500 bg-red-600! text-white hover:bg-red-50"
+              icon={<CloseOutlined />}
+            >
+              Reject
+            </Button>
+          )}
+          {record.status === 'approved' && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => openRejectModal(record)}
+              className="border-red-500 bg-red-600! text-white hover:bg-red-50"
+              icon={<CloseOutlined />}
+            >
+              Reject
+            </Button>
+          )}
+          {record.status === 'rejected' && (
+            <Button
+              type="primary"
+              size="small"
+              onClick={() => openApproveModal(record)}
+              className="border-green-500 bg-green-600! text-white! hover:bg-green-50"
+              icon={<CheckOutlined />}
+            >
+              Approve
+            </Button>
+          )}
         </Space>
       ),
     },
@@ -199,7 +237,7 @@ const Students: FC = () => {
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={StudentData}
           locale={{ emptyText: customEmpty }}
           size="small"
           className="custom-table text-[14px]"
@@ -211,6 +249,35 @@ const Students: FC = () => {
           }}
         />
       </div>
+
+      {/* Approve Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={approveModalVisible}
+        onClose={() => {
+          setApproveModalVisible(false);
+          setSelectedApplication(null);
+        }}
+        onConfirm={handleApprove}
+        title="Approve Application"
+        message={`Are you sure you want to approve ${selectedApplication?.name}'s club application?`}
+        confirmText="Approve Application"
+        type="approve"
+        loading={loading}
+      />
+
+      {/* Reject Confirmation Modal */}
+      <RejectConfirmationModal
+        isOpen={rejectModalVisible}
+        onClose={() => {
+          setRejectModalVisible(false);
+          setSelectedApplication(null);
+        }}
+        onConfirm={handleReject}
+        title="Reject Application"
+        message={`Are you sure you want to reject ${selectedApplication?.name}'s club application?`}
+        confirmText="Reject Application"
+        loading={loading}
+      />
     </div>
   );
 };

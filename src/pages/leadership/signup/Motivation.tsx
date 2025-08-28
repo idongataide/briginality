@@ -1,24 +1,32 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useOnboardingStore } from "@/global/store";
+import { useLeadershipStore } from "@/global/leadershipStore";
 // import { ResponseValue } from "@/interfaces/enums";
 
 
 const Motivation = () => {
-  const { setNavPath } = useOnboardingStore();
+  const { setNavPath, setLeadershipSignupData, leadershipSignupData } = useLeadershipStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
-  const navPath = useOnboardingStore();
+  const navPath = useLeadershipStore();
+
+  useEffect(() => {
+    // Load existing data if available
+    if (leadershipSignupData?.motivation) {
+      form.setFieldsValue(leadershipSignupData.motivation);
+    }
+  }, [form, leadershipSignupData?.motivation]);
 
   const onFinish = async (values: any) => {
     try {
+      console.log('sdsdsd')
       setLoading(true);
-      console.log("Motivation form values:", values);
-      toast.success("Form submitted successfully");
+      setLeadershipSignupData("motivation", values);
+      toast.success("Motivation saved");
       setNavPath("leadership-experience");
       navigate('/leadership/signup');
     } catch (error) {
@@ -61,7 +69,7 @@ const Motivation = () => {
                 <Button
                   type="default"
                   onClick={() => {
-                    navPath.setNavPath("club-preference");   
+                    navPath.setNavPath("leadership-club-preference");   
                   }}               
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >

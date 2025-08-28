@@ -1,6 +1,6 @@
 interface iData {
     data?: {
-      token?: string;
+      apiToken?: string;
       email?: string;
       username?: string;
       refresh?: string;
@@ -16,7 +16,7 @@ interface iData {
   interface iNavPath {
     setNavPath: (path: string) => void;
     setEmail: (email: string) => void;
-    setToken: (token: string) => void;
+    setToken: (apiToken: string) => void;
     setRole: (role: string) => void;
     setAvatar: (avatar: string) => void;
     setUserName: (userName: string) => void;
@@ -37,7 +37,7 @@ interface iData {
     navPath.setNavPath(screenPath);
     navPath.setEmail(email || ""); 
     navPath.setAvatar(res.data.avatar || "");
-    navPath.setToken(res.data.token || "");
+    navPath.setToken(res.data.apiToken || "");
     navPath.setRole(res.data.role || "");
     navPath.setUserName(res.data.username || "");
     navPath.setFirstName(res.data.first_name || "");

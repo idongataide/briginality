@@ -1,16 +1,13 @@
 /* eslint-disable no-undef */
 /* eslint-disable @typescript-eslint/no-require-imports */
 
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ['Satoshi', 'sans-serif'],
-        satoshi: ['Satoshi', 'sans-serif'],
-      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -65,3 +62,4 @@ module.exports = {
 
 /* eslint-enable no-undef */
 /* eslint-enable @typescript-eslint/no-require-imports */
+

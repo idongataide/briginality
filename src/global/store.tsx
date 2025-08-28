@@ -1,5 +1,6 @@
 import { create, StoreApi } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import { StudentSignupStoreData } from "@/interfaces/studentSignup";
 
 type iData = {
   [key: string]: any;
@@ -32,6 +33,11 @@ interface StoreState {
 
     formData: iData | null;
     setFormData: (data: iData) => void;
+
+    // Student signup data structure
+    studentSignupData: StudentSignupStoreData;
+    setStudentSignupData: (step: keyof StudentSignupStoreData, data: any) => void;
+    clearStudentSignupData: () => void;
 
     otpRequestId: string | null;
     setOtpRequestId: (id: string | null) => void;
@@ -90,6 +96,28 @@ const myMiddlewares = <T,>(
 
             formData: null,
             setFormData: (data) => set({ formData: data }),
+
+            // Student signup data structure
+            studentSignupData: {
+                basicInfo: null,
+                clubPreference: null,
+                experience: null,
+                accommodations: null,
+            },
+            setStudentSignupData: (step: keyof StudentSignupStoreData, data: any) => set((state) => ({
+                studentSignupData: {
+                    ...state.studentSignupData,
+                    [step]: data,
+                },
+            })),
+            clearStudentSignupData: () => set({ 
+                studentSignupData: { 
+                    basicInfo: null, 
+                    clubPreference: null, 
+                    experience: null, 
+                    accommodations: null 
+                } 
+            }),
 
             otpRequestId: null,
             setOtpRequestId: (id) => set({ otpRequestId: id }),

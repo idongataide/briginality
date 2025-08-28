@@ -6,29 +6,35 @@ import toast from "react-hot-toast";
 // import { ResponseValue } from "@/interfaces/enums";
 import { Country, ICountry } from "country-state-city";
 import { useLeadershipStore } from "@/global/leadershipStore";
+import { useRegions } from "@/hooks/useEnums";
 
 
 const BasicInfo = () => {
-  const { setNavPath } = useLeadershipStore();
+  const { setNavPath, setLeadershipSignupData, leadershipSignupData } = useLeadershipStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
   const [countries, setCountries] = useState<ICountry[]>([]);
   const { Option } = Select;
-
+  const {data : regions } =useRegions();
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
   }, []);
 
+  useEffect(() => {
+    // Load existing data if available
+    if (leadershipSignupData?.basicInfo) {
+      form.setFieldsValue(leadershipSignupData.basicInfo);
+    }
+  }, [form, leadershipSignupData?.basicInfo]);
+
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
 
-      // Mock or replace this with actual API call logic if needed
-      console.log("Form values:", values);
-      toast.success("Form submitted successfully");
-
+      setLeadershipSignupData("basicInfo", values);
+      toast.success("Basic info saved");
       // Redirect to next section
       setNavPath("leadership-availability");
       navigate('/leadership/signup')
@@ -89,7 +95,20 @@ const BasicInfo = () => {
                   label="Date of Birth"
                   rules={[{ required: true, message: "Please select your date of birth" }]}
                 >
-                  <DatePicker className="w-full h-[43px]!" style={{ width: '100%' }} format="YYYY-MM-DD" placeholder="Select date of birth" />
+                  <DatePicker 
+                    className="w-full h-[43px]!" 
+                    style={{ width: '100%' }} 
+                    format="YYYY-MM-DD" 
+                    placeholder="Select date of birth"
+                    disabledDate={(current) => {
+                      // Disable dates that would make user younger than 13 years
+                      if (!current) return false;
+                      const today = new Date();
+                      const minDate = new Date();
+                      minDate.setFullYear(today.getFullYear() - 13);
+                      return current.toDate() > minDate;
+                    }}
+                  />
                 </Form.Item>
             </div>
             <div className="col-md-6">
@@ -138,19 +157,18 @@ const BasicInfo = () => {
               </Radio.Group>
             </Form.Item>
 
+            
             <Form.Item
               name="region"
               label="Which region are you located in?"
               rules={[{ required: true, message: "Please select a region" }]}
             >
               <Radio.Group>
-                <Radio value="afro-euro">AfroEuro – Africa + Europe</Radio>
-                <Radio value="amerisphere">
-                  AmeriSphere – North, Central & South America
-                </Radio>
-                <Radio value="asialume">
-                  AsiaLume – Asia + Australia/Oceania
-                </Radio>
+                {regions?.data?.map((region: any) => (
+                  <Radio key={region.id} value={region.id}>
+                    {region.name}
+                  </Radio>
+                ))}
               </Radio.Group>
             </Form.Item>
 

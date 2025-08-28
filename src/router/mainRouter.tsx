@@ -1,24 +1,42 @@
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { useOnboardingStore } from "../global/store";
-import DashboardLayout from "../layouts/dashboardLayout";
-import Login from "@/pages/students/login/login";
-import OnboardingLayout from "@/layouts/OnboardingLayout";
+import { useLeadershipStore } from "@/global/leadershipStore";
+import { useNavigate } from "react-router-dom";
+import RoleSelectionPage from "@/pages/RoleSelectionPage";
+import DashboardLayout from "@/layouts/dashboardLayout";
+import LoadingScreen from "@/layouts/LoadingScreen";
+
 
 const MainRouter: React.FC = () => {
-  const { token } = useOnboardingStore();
+  const { token: onboardingToken, role: onboardingRole } = useOnboardingStore();
+  const { token: leadershipToken, role: leadershipRole } = useLeadershipStore();
+  const navigate = useNavigate();
+
 
   useEffect(() => {
-    // Add any initialization logic 
-  }, []);
+    if (onboardingToken || leadershipToken) {
+      if (onboardingRole === "club-member") {
+        navigate("/students/dashboard", { replace: true });
+      } else if (leadershipRole === "club-president") {
+        navigate("/leadership/dashboard", { replace: true });
+      } else if (onboardingRole === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/role-selection", { replace: true });
+      }
+    }
+  }, [onboardingToken, leadershipToken, onboardingRole, leadershipRole, navigate]);
 
-  if (!token) {
-    return <DashboardLayout />;
+  if (!onboardingToken && !leadershipToken) {
+    return (
+      <RoleSelectionPage/>
+    );
   }
 
   return (
-    <OnboardingLayout>
-      <Login />
-    </OnboardingLayout>
+    <Suspense fallback={<LoadingScreen />}>
+      <DashboardLayout />
+    </Suspense> 
   );
 };
 

@@ -7,19 +7,52 @@ import { useOnboardingStore } from "@/global/store";
 // import { ResponseValue } from "@/interfaces/enums";
 import { Country, ICountry } from "country-state-city";
 import dayjs from "dayjs";
+import { useRegions } from "@/hooks/useEnums";
+
 
 const BasicInfo = () => {
-  const { setNavPath } = useOnboardingStore();
+  const { setNavPath, studentSignupData, setStudentSignupData } = useOnboardingStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const [showGuardianEmail, setShowGuardianEmail] = useState(false);
   const navigate = useNavigate();
   const [countries, setCountries] = useState<ICountry[]>([]);
   const { Option } = Select;
+  const homeschoolStatus = Form.useWatch('homeschoolStatus', form);
+
+  const {data : regions } = useRegions();
+
 
   useEffect(() => {
     setCountries(Country.getAllCountries());
-  }, []);
+    
+    // Load existing data if available
+    if (studentSignupData?.basicInfo) {
+      const formData: any = { ...studentSignupData.basicInfo };
+      
+      // Convert date string to dayjs object if it exists
+      if (formData.dateOfBirth && typeof formData.dateOfBirth === 'string') {
+        try {
+          const dateObj = dayjs(formData.dateOfBirth);
+          if (dateObj.isValid()) {
+            formData.dateOfBirth = dateObj;
+            
+            // Check if guardian email should be shown
+            const age = calculateAge(dateObj);
+            setShowGuardianEmail(age < 18);
+          } else {
+            console.warn('Invalid date format:', formData.dateOfBirth);
+            delete formData.dateOfBirth; // Remove invalid date
+          }
+        } catch (error) {
+          console.error('Error parsing date:', error);
+          delete formData.dateOfBirth; // Remove problematic date
+        }
+      }
+      
+      form.setFieldsValue(formData);
+    }
+  }, [form, studentSignupData?.basicInfo]);
 
   const calculateAge = (dateOfBirth: dayjs.Dayjs) => {
     const today = dayjs();
@@ -39,9 +72,22 @@ const BasicInfo = () => {
     try {
       setLoading(true);
 
-      // Mock or replace this with actual API call logic if needed
-      console.log("Form values:", values);
-      toast.success("Form submitted successfully");
+      if (values?.homeschoolStatus !== 'homeschooled') {
+        toast.error("To continue, select 'Yes, I'm homeschooled'.");
+        return;
+      }
+
+      // Convert dayjs date to string before saving
+      const dataToSave = { ...values };
+      if (dataToSave.dateOfBirth && typeof dataToSave.dateOfBirth !== 'string') {
+        dataToSave.dateOfBirth = dataToSave.dateOfBirth.format('YYYY-MM-DD');
+      }
+
+      // Save data to store
+      setStudentSignupData("basicInfo", dataToSave);
+      
+      console.log("Form values:", dataToSave);
+      toast.success("Basic information saved successfully");
 
       // Redirect to next section
       setNavPath("club-preference");
@@ -74,13 +120,31 @@ const BasicInfo = () => {
               <div className="col-md-6">
                 <Form.Item
                   name="dateOfBirth"
-                  label="Date of Birth"
+                  label="Date of Birth (14-18 years)"
                   rules={[{ required: true, message: "Please enter your date of birth" }]}
                 >
                   <DatePicker 
                     placeholder="Select Date of Birth"
                     className="w-full h-[43px]!"
                     onChange={handleDateOfBirthChange}
+                                         disabledDate={(current) => {
+                       if (!current) return false;
+                       
+                       const today = dayjs();
+                       // Allow students who are 14-18 years old
+                       // Calculate the birth years dynamically based on current year
+                       const minBirthYear = today.subtract(18, 'year').year(); // 18 years ago
+                       const maxBirthYear = today.subtract(14, 'year').year(); // 14 years ago
+                       
+                       const birthYear = current.year();
+                       
+                       // Only allow years within the 14-18 age range
+                       if (birthYear < minBirthYear || birthYear > maxBirthYear) {
+                         return true; // Disable all dates outside these years
+                       }
+                       
+                       return false; // Allow all dates within the valid years
+                     }}
                   />
                 </Form.Item>
               </div>
@@ -165,26 +229,30 @@ const BasicInfo = () => {
               rules={[{ required: true, message: "Please select a region" }]}
             >
               <Radio.Group>
-                <Radio value="afro-euro">AfroEuro – Africa + Europe</Radio>
-                <Radio value="amerisphere">
-                  AmeriSphere – North, Central & South America
-                </Radio>
-                <Radio value="asialume">
-                  AsiaLume – Asia + Australia/Oceania
-                </Radio>
+                {regions?.data?.map((region: any) => (
+                  <Radio key={region.id} value={region.id}>
+                    {region.name}
+                  </Radio>
+                ))}
               </Radio.Group>
             </Form.Item>
 
-            <Form.Item>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                className="w-[100%] font-medium h-[42px]!"
-              >
-                Submit & Continue
-              </Button>
-            </Form.Item>
+            {homeschoolStatus === 'homeschooled' ? (
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  className="w-[100%] font-medium h-[42px]!"
+                >
+                  Save & Continue
+                </Button>
+              </Form.Item>
+            ) : (
+              <div className="mb-3 text-center text-[#7D8489]">
+                You can proceed by selecting "Yes, I'm homeschooled".
+              </div>
+            )}
           </Form>
             <p className="mb-0 text-center text-[#7D8489]">
                 Already have an account?{" "}

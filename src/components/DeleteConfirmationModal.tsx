@@ -1,52 +1,118 @@
 import React from 'react';
-import { Button } from 'antd';
+import { Modal, Button, Space } from 'antd';
+import { ExclamationCircleOutlined, CheckOutlined } from '@ant-design/icons';
 
-interface DeleteConfirmationModalProps {
-  itemName: string;
+interface ConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
   onConfirm: () => void;
-  onCancel: () => void;
-  loading: boolean;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  type?: 'delete' | 'approve' | 'confirm';
+  loading?: boolean;
 }
 
-const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
-  itemName,
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  isOpen,
+  onClose,
   onConfirm,
-  onCancel,
-  loading,
+  title,
+  message,
+  confirmText,
+  cancelText = 'Cancel',
+  type = 'confirm',
+  loading = false,
 }) => {
+  const getIcon = () => {
+    switch (type) {
+      case 'delete':
+        return <ExclamationCircleOutlined style={{ color: '#ff4d4f' }} />;
+      case 'approve':
+        return <CheckOutlined style={{ color: '#52c41a' }} />;
+      default:
+        return <ExclamationCircleOutlined style={{ color: '#faad14' }} />;
+    }
+  };
+
+  type PrimaryButtonType = 'primary' | 'default';
+
+  const getConfirmButtonType = (): PrimaryButtonType => {
+    switch (type) {
+      case 'delete':
+      case 'approve':
+        return 'primary';
+      default:
+        return 'primary';
+    }
+  };
+
+  const getConfirmButtonStyle = () => {
+    switch (type) {
+      case 'delete':
+        return 'bg-red-500 border-red-500 hover:bg-red-600';
+      case 'approve':
+        return 'bg-green-500 border-green-500 hover:bg-green-600';
+      default:
+        return 'bg-blue-500 border-blue-500 hover:bg-blue-600';
+    }
+  };
+
+  const getDefaultConfirmText = () => {
+    switch (type) {
+      case 'delete':
+        return 'Delete';
+      case 'approve':
+        return 'Approve';
+      default:
+        return 'Confirm';
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center  bg-[#38383880] bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-sm">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-[#1C2023]">Delete Fee</h3>
-          <button onClick={onCancel} className="text-[#7D8489] hover:text-black">
-            ✕
-          </button>
+    <Modal
+      open={isOpen}
+      onCancel={onClose}
+      footer={null}
+      width={400}
+      centered
+      className="confirmation-modal"
+    >
+      <div className="text-center p-4">
+        <div className="mb-4 text-4xl">
+          {getIcon()}
         </div>
-        <p className="text-[#667085] mb-6">
-          You are about to delete <strong>{itemName}</strong>, will you want to proceed with this action?
+        
+        <h3 className="text-lg font-bold! text-gray-900 mb-3">
+          {title}
+        </h3>
+        
+        <p className="text-gray-600 mb-6">
+          {message}
         </p>
-        <div className="flex justify-end gap-3">
-          <button
-            className="px-4 py-2 rounded-md border border-[#E5E9F0] text-[#475467] hover:bg-gray-50"
-            onClick={onCancel}
-            disabled={loading}
-          >
-            Cancel
-          </button>
+        
+        <Space size="middle">
           <Button
-            type="primary"
-            danger
-            className="rounded-md h-[46px]! px-6! border border-transparent bg-[#FF6C2D]! py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
-            loading={loading}
-            onClick={onConfirm}
+            onClick={onClose}
+            disabled={loading}
+            className="px-6"
           >
-            Delete
+            {cancelText}
           </Button>
-        </div>
+          
+          <Button
+            type={getConfirmButtonType()}
+            onClick={onConfirm}
+            loading={loading}
+            className={`px-6 text-white ${getConfirmButtonStyle()}`}
+          >
+            {confirmText || getDefaultConfirmText()}
+          </Button>
+        </Space>
       </div>
-    </div>
+    </Modal>
   );
 };
 
-export default DeleteConfirmationModal; 
+export default ConfirmationModal; 

@@ -1,30 +1,50 @@
 "use client";
-import React from "react";
-import { Form, Input, Button, Radio } from "antd";
+import React, { useEffect } from "react";
+import { Form, Input, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useOnboardingStore } from "@/global/store";
+import { useLeadershipStore } from "@/global/leadershipStore";
 
 const Experience = () => {
-  const { setNavPath } = useOnboardingStore();
+  const { setNavPath, setLeadershipSignupData, leadershipSignupData } = useLeadershipStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const [hasExperience, setHasExperience] = React.useState<string | null>(null);
   const navigate = useNavigate();
-  const navPath = useOnboardingStore();
+  const navPath = useLeadershipStore();
+
+  useEffect(() => {
+    // Load existing data if available
+    if (leadershipSignupData?.experience) {
+      const formData = leadershipSignupData.experience;
+      form.setFieldsValue(formData);
+      if (formData.hasLeadershipExperience) {
+        setHasExperience(formData.hasLeadershipExperience);
+      }
+    }
+  }, [form, leadershipSignupData?.experience]);
 
   const onFinish = async (values: any) => {
     try {
+      console.log('sds1')
       setLoading(true);
-      console.log("Experience form values:", values);
-      toast.success("Form submitted successfully");
-      setNavPath("motivation");
-      navigate("/signup");
+      // Add the hasExperience to the form values
+      const formData = { ...values, hasLeadershipExperience: hasExperience };
+      setLeadershipSignupData("experience", formData);
+      toast.success("Experience saved");
+      setNavPath("leadership-case-study");
+      navigate("/leadership/signup");
     } catch (error) {
       toast.error("An error occurred");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExperienceSelection = (value: string) => {
+    setHasExperience(value);
+    // Update the form field value
+    form.setFieldsValue({ hasLeadershipExperience: value });
   };
 
   return (
@@ -41,13 +61,22 @@ const Experience = () => {
                 label="Do you have any leadership experience (formal or informal)? *"
                 rules={[{ required: true, message: "This field is required" }]}
               >
-                <Radio.Group
-                  onChange={e => setHasExperience(e.target.value)}
-                  value={hasExperience}
-                >
-                  <Radio value="yes">Yes</Radio>
-                  <Radio value="no">No</Radio>
-                </Radio.Group>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <Button
+                    type={hasExperience === "yes" ? "primary" : "default"}
+                    onClick={() => handleExperienceSelection("yes")}
+                    className="flex-1"
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    type={hasExperience === "no" ? "primary" : "default"}
+                    onClick={() => handleExperienceSelection("no")}
+                    className="flex-1"
+                  >
+                    No
+                  </Button>
+                </div>
               </Form.Item>
             </div>
 
@@ -68,7 +97,7 @@ const Experience = () => {
                 <Button
                   type="default"
                   onClick={() => {
-                    navPath.setNavPath("availability");   
+                    navPath.setNavPath("leadership-motivation");   
                   }}               
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >

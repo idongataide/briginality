@@ -6,10 +6,11 @@ import EnterOtp from "./enter-otp/enterOtp";
 import EnterPassword from "./enter-password/enterPassword";
 import ClubPreference from "./signup/ClubPreference";
 import BasicInfo from "./signup/BasicInfo";
-import Accommodations from "./signup/Accomodations";
 import Availability from "./signup/Availability";
 import Motivation from "./signup/Motivation";
-import Experiences from "../students/signup/Experience";
+import Experience from "./signup/Experience";
+import CaseStudy from "./signup/CaseStudy";
+import FinalNote from "./signup/FinalNote";
 
 const LeadershipAuthPath: React.FC = () => {
   const navPath = useLeadershipStore();
@@ -23,9 +24,10 @@ const LeadershipAuthPath: React.FC = () => {
       {navPath?.navPath === "leadership-basic-info" && <BasicInfo />}
       {navPath?.navPath === "leadership-club-preference" && <ClubPreference />}
       {navPath?.navPath === "leadership-availability" && <Availability />}
-      {navPath?.navPath === "leadership-accommodations" && <Accommodations />}
       {navPath?.navPath === "leadership-motivation" && <Motivation />}
-      {navPath?.navPath === "leadership-experience" && <Experiences />}
+      {navPath?.navPath === "leadership-experience" && <Experience />}
+      {navPath?.navPath === "leadership-case-study" && <CaseStudy />}
+      {navPath?.navPath === "leadership-final-notes" && <FinalNote />}
     </div>
   );
 };

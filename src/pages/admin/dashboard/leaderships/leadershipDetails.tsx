@@ -1,100 +1,49 @@
-import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Tabs, Avatar, Button } from 'antd';
+import { Tabs, Avatar, Button, Spin } from 'antd';
 import { UserOutlined, MailOutlined, GlobalOutlined, TeamOutlined, BookOutlined, HeartOutlined, CalendarOutlined, ClockCircleOutlined } from '@ant-design/icons';
-
-// Mock data - in real app, this would come from API
-const mockLeadershipData = {
-  id: '1',
-  fullName: 'Oscar Adetona',
-  role: 'regional-president',
-  dateOfBirth: '2009-05-15',
-  guardianEmail: 'oscar.guardian@email.com',
-  pronouns: 'He/Him',
-  country: 'Nigeria',
-  homeschoolStatus: 'homeschooled',
-  region: 'afro-euro',
-  dateJoined: 'Thur, 14/08/24 2:30pm',
-  availabilityCommitment: 'both',
-  weekendAvailability: ['Saturday Morning', 'Sunday Afternoon'],
-  clubs: ['code_for_change', 'poetry_prose', 'mun', 'entrepreneurship_innovation'],
-  motivation: 'I want to help build a strong community and create opportunities for other homeschooled students to connect and grow together.',
-  fitReason: 'I have experience organizing events and leading small groups. I am passionate about technology and believe I can contribute to the Code for Change club while learning from others.',
-  hasLeadershipExperience: 'yes',
-  leadershipDetails: 'I have been the leader of my local homeschool co-op for 2 years, organizing weekly meetings and coordinating activities for 15+ students.',
-  accessibilityNeeds: 'No',
-  participationNeeds: 'No',
-  avatar: null
-};
-
-// Club mapping for display
-const clubLabels: { [key: string]: string } = {
-  'code_for_change': 'Code for Change',
-  'women_in_stem': 'Women in STEM Circle',
-  'space_astronomy': 'Space & Astronomy Club',
-  'health_bioethics': 'Health & Bioethics Circle',
-  'crochet_fiber_arts': 'Crochet & Fiber Arts Club',
-  'poetry_prose': 'Poetry & Prose Circle',
-  'visual_art_illustration': 'Visual Art & Illustration Club',
-  'music_production': 'Music Production & Performance Club',
-  'culinary_cultures': 'Culinary Cultures Club',
-  'language_exchange': 'Language Exchange & Linguistics Club',
-  'story_circles': 'Story Circles',
-  'mun': 'Model United Nations (MUN)',
-  'debate_public_speaking': 'Debate & Public Speaking Club',
-  'journalism_oped': 'Journalism & Op-Ed Writing Club',
-  'human_rights_advocacy': 'Human Rights & Advocacy Club',
-  'entrepreneurship_innovation': 'Entrepreneurship & Innovation Club',
-  'finance_investing': 'Finance & Investing for Teens',
-  'study_skills_productivity': 'Study Skills & Productivity Circle'
-};
-
-const clubCategories: { [key: string]: string } = {
-  'code_for_change': 'STEM-Focused',
-  'women_in_stem': 'STEM-Focused',
-  'space_astronomy': 'STEM-Focused',
-  'health_bioethics': 'STEM-Focused',
-  'crochet_fiber_arts': 'Creative & Cultural',
-  'poetry_prose': 'Creative & Cultural',
-  'visual_art_illustration': 'Creative & Cultural',
-  'music_production': 'Creative & Cultural',
-  'culinary_cultures': 'Creative & Cultural',
-  'language_exchange': 'Creative & Cultural',
-  'story_circles': 'Civic & Intellectual',
-  'mun': 'Civic & Intellectual',
-  'debate_public_speaking': 'Civic & Intellectual',
-  'journalism_oped': 'Civic & Intellectual',
-  'human_rights_advocacy': 'Civic & Intellectual',
-  'entrepreneurship_innovation': 'Innovation & Life Skills',
-  'finance_investing': 'Innovation & Life Skills',
-  'study_skills_productivity': 'Innovation & Life Skills'
-};
-
-// Role mapping for display
-const roleLabels: { [key: string]: string } = {
-  'regional-president': 'Regional President',
-  'regional-vice-president': 'Regional Vice President',
-  'club-president': 'Club President',
-  'club-vice-president': 'Club Vice President',
-  'open-any': 'Open to any leadership position'
-};
+import { useRoleApplicationDetails } from '@/hooks/useAdmin';
 
 const LeadershipDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [leadership, setLeadership] = useState(mockLeadershipData);
-  const [loading, setLoading] = useState(false);
-  console.log(loading);
+  const { data: applicationData, isLoading } = useRoleApplicationDetails(id as string);
 
-  useEffect(() => {
-    // In real app, fetch leadership data by ID
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setLeadership(mockLeadershipData);
-      setLoading(false);
-    }, 500);
-  }, [id]);
+  const leadership = {
+    id: applicationData?.id ?? '',
+    fullName: applicationData?.name ?? '',
+    role: applicationData?.role ?? '',
+    age: applicationData?.age ?? '',
+    email: applicationData?.email ?? '',
+    pronouns: applicationData?.pronouns ?? '',
+    country: applicationData?.country_timezone ?? '',
+    homeschoolStatus: applicationData?.homeschool_status ?? '',
+    region: applicationData?.region_name ?? '',
+    dateJoined: applicationData?.submitted_at ?? '',
+    availability: applicationData?.availability ?? [],
+    clubs: applicationData?.club_preference_names ?? [],
+    motivation: Array.isArray(applicationData?.motivation)
+      ? (applicationData?.motivation as string[]).join(' • ')
+      : (applicationData?.motivation as string) ?? '',
+    fitReason: Array.isArray(applicationData?.experience)
+      ? (applicationData?.experience as string[]).join(' • ')
+      : (applicationData?.experience as string) ?? '',
+    hasLeadershipExperience: applicationData?.experience ? 'yes' : 'no',
+    leadershipDetails: Array.isArray(applicationData?.case_study)
+      ? (applicationData?.case_study as string[]).join(' • ')
+      : (applicationData?.case_study as string) ?? '',
+    accessibilityNeeds: 'No', // Default value as not provided in the response
+    participationNeeds: 'No', // Default value as not provided in the response
+    avatar: null
+  };
+
+  // Role mapping for display
+  const roleLabels: { [key: string]: string } = {
+    'regional-president': 'Regional President',
+    'regional-vice-president': 'Regional Vice President',
+    'club-president': 'Club President',
+    'club-vice-president': 'Club Vice President',
+    'open-any': 'Open to any leadership position'
+  };
 
   const items = [
     {
@@ -116,10 +65,10 @@ const LeadershipDetails = () => {
                 <div className="info-value">{roleLabels[leadership.role] || leadership.role}</div>
               </div>
               <div className="info-item">
-                <div className="info-label text-md font-medium text-[#171717]">Date of Birth</div>
+                <div className="info-label text-md font-medium text-[#171717]">Age</div>
                 <div className="info-value">
                   <CalendarOutlined className="mr-2" />
-                  {leadership.dateOfBirth}
+                  {leadership.age} years old
                 </div>
               </div>
               <div className="info-item">
@@ -134,10 +83,10 @@ const LeadershipDetails = () => {
                 </div>
               </div>
               <div className="info-item col-span-2">
-                <div className="info-label text-md font-medium text-[#171717]">Guardian Email</div>
+                <div className="info-label text-md font-medium text-[#171717]">Email</div>
                 <div className="info-value">
                   <MailOutlined className="mr-2" />
-                  {leadership.guardianEmail}
+                  {leadership.email}
                 </div>
               </div>
               <div className="info-item col-span-2">
@@ -151,9 +100,7 @@ const LeadershipDetails = () => {
               <div className="info-item col-span-2">
                 <div className="info-label text-md font-medium text-[#171717]">Region</div>
                 <div className="info-value">
-                  {leadership.region === 'afro-euro' ? 'AfroEuro – Africa + Europe' :
-                   leadership.region === 'amerisphere' ? 'AmeriSphere – North, Central & South America' :
-                   'AsiaLume – Asia + Australia/Oceania'}
+                  {leadership.region}
                 </div>
               </div>
               <div className="info-item col-span-2">
@@ -173,18 +120,9 @@ const LeadershipDetails = () => {
           <div className="card-body">
             <div className="space-y-4">
               <div className="info-item">
-                <div className="info-label text-md font-medium text-[#171717]">Commitment Level</div>
-                <div className="info-value">
-                  <ClockCircleOutlined className="mr-2" />
-                  {leadership.availabilityCommitment === 'both' ? 'Yes, I can commit to both' :
-                   leadership.availabilityCommitment === 'occasional' ? 'I may have occasional conflicts, but I\'m generally available' :
-                   'No, I can\'t commit right now'}
-                </div>
-              </div>
-              <div className="info-item">
                 <div className="info-label text-md font-medium text-[#171717]">Weekend Availability</div>
                 <div className="flex flex-wrap gap-2">
-                  {leadership.weekendAvailability.map((time, index) => (
+                  {leadership.availability.map((time: string, index: number) => (
                     <span 
                       key={index} 
                       className="inline-block px-3 py-1 text-sm rounded-full bg-green-100 text-green-800"
@@ -207,14 +145,11 @@ const LeadershipDetails = () => {
           <div className="card-body">
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {leadership.clubs.map((club, index) => (
+                {leadership.clubs.map((club: string, index: number) => (
                   <div key={index} className="border rounded p-3 border-l-4 border-[#3898CB]">
                     <div className="space-y-2">
-                      <span className="inline-block px-2 py-1 text-xs font-medium rounded text-[#fff] bg-[#3898CB]">
-                        {clubCategories[club as keyof typeof clubCategories]}
-                      </span>
                       <div className="font-medium text-sm">
-                        {clubLabels[club as keyof typeof clubLabels]}
+                        {club}
                       </div>
                     </div>
                   </div>
@@ -224,10 +159,7 @@ const LeadershipDetails = () => {
               <div>
                 <h4 className="font-medium mb-2">Club Selection Summary</h4>
                 <div className="text-sm text-gray-600">
-                  Leadership has selected {leadership.clubs.length} clubs across different categories, 
-                  showing interest in {Object.keys(clubCategories).filter(cat => 
-                    leadership.clubs.some(club => clubCategories[club as keyof typeof clubCategories] === cat)
-                  ).length} different areas.
+                  Leadership has selected {leadership.clubs.length} clubs.
                 </div>
               </div>
             </div>
@@ -256,7 +188,7 @@ const LeadershipDetails = () => {
                 </div>
               </div>
               <div className="info-item">
-                <div className="info-label text-md font-medium text-[#171717]">Why They're a Good Fit</div>
+                <div className="info-label text-md font-medium text-[#171717]">Experience</div>
                 <div className="max-w-full">
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <div className="flex items-start space-x-2">
@@ -294,7 +226,7 @@ const LeadershipDetails = () => {
               </div>
               {leadership.leadershipDetails && (
                 <div className="info-item">
-                  <div className="info-label text-md font-medium text-[#171717]">Experience Details</div>
+                  <div className="info-label text-md font-medium text-[#171717]">Case Study</div>
                   <div className="max-w-2xl">
                     <div className="bg-yellow-50 p-4 rounded-lg">
                       <div className="flex items-start space-x-2">
@@ -406,15 +338,16 @@ const LeadershipDetails = () => {
           <div className="row">
             <div className="col-12 col-lg-8">
               <div className="box">
-                {/* <div className="box-header with-border">
-                  <h3 className="box-title">Leadership Information</h3>
-                </div> */}
                 <div className="box-body">
-                  <Tabs 
-                    defaultActiveKey="1" 
-                    items={items}
-                    className="leadership-details-tabs"
-                  />
+                  {isLoading ? (
+                    <div className="py-10 text-center"><Spin /></div>
+                  ) : (
+                    <Tabs 
+                      defaultActiveKey="1" 
+                      items={items}
+                      className="leadership-details-tabs"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -432,7 +365,7 @@ const LeadershipDetails = () => {
                                 {leadership.fullName}
                             </h3>
                             <h6 className="widget-user-desc text-white">
-                                {roleLabels[leadership.role] || leadership.role} • {leadership.dateOfBirth}
+                                {roleLabels[leadership.role] || leadership.role} • Age {leadership.age}
                             </h6>
                         </div>
                 </div>
@@ -467,7 +400,7 @@ const LeadershipDetails = () => {
                     <div className="col-sm-4">
                       <div className="description-block">
                         <h5 className="description-header">
-                          {leadership.region.split('-')[0].toUpperCase()}
+                          {leadership.region?.split(' ')[0]?.toUpperCase() || 'REGION'}
                         </h5>
                         <span className="description-text">REGION</span>
                       </div>
@@ -485,7 +418,7 @@ const LeadershipDetails = () => {
                         <div className="flex items-center space-x-2">
                           <MailOutlined className="text-gray-400" />
                           <span className="text-md text-gray-600">
-                            {leadership.guardianEmail}
+                            {leadership.email}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -505,9 +438,7 @@ const LeadershipDetails = () => {
                         <div className="flex items-center space-x-2">
                           <ClockCircleOutlined className="text-gray-400" />
                           <span className="text-md text-gray-600">
-                            {leadership.availabilityCommitment === 'both' ? 'Full Commitment' :
-                             leadership.availabilityCommitment === 'occasional' ? 'Occasional Conflicts' :
-                             'Limited Availability'}
+                            {leadership.availability.length} time slots available
                           </span>
                         </div>
                       </div>

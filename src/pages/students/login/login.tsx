@@ -7,11 +7,12 @@ import { login } from "@/api/authAPI";
 import toast from "react-hot-toast";
 import { setNavData } from "../common/setNavData";
 import { useOnboardingStore } from "@/global/store";
-import { sendOtp } from "@/api/otpApi";
 import { ResponseValue } from "@/interfaces/enums";
+import { useLeadershipStore } from "@/global/leadershipStore";
+import { FaAngleLeft } from "react-icons/fa";
 
 const Login = () => {
-  const { setNavPath, setOtpRequestId, setEmail } = useOnboardingStore();
+  const { setEmail, setUserName, setRole } = useOnboardingStore();
   const navigate = useNavigate();
   const navPath = useOnboardingStore();
   const [loading, setLoading] = React.useState(false);
@@ -31,44 +32,31 @@ const Login = () => {
         }
 
         if (res.status === ResponseValue.SUCCESS) {
+          localStorage.clear();
+          useLeadershipStore.persist.clearStorage();
+          useOnboardingStore.persist.clearStorage(); 
           toast.success('Login Successful');
           setNavData(navPath, values.email, res);
+          try {
+            setEmail(res?.data?.email ?? values.email);
+            setUserName(res?.data?.name ?? '');
+            const roles = Array.isArray(res?.data?.role)
+              ? res.data.role
+              : res?.data?.role
+              ? [res.data.role]
+              : [];
+            setRole(roles[0] ?? '');
+          } catch (_) {}
           localStorage.setItem(
-            "adminToken",
-            JSON.stringify({ access: res?.data?.token })
+            "apiToken",
+            JSON.stringify({ access: res?.data?.apiToken })
           );
-          navigate("/");
-        } else if (res.status === 'reset-pass') {
-          const otpData = {
-            otp_request_id: res?.otp_request_id,
-            otp_mode: 'email'
-          };
-
-          sendOtp(otpData)
-            .then((otpRes) => {
-              if (otpRes?.error) {
-                toast.error(otpRes.message || 'Failed to send OTP');
-              } else {
-                setOtpRequestId(otpRes?.data?.otp_request_id);
-                toast.success('OTP sent. Please enter the code to reset your password.');
-                navigate('/login/forgot-password');
-                setNavPath("enter-otp");
-                setEmail(values.email);
-              }
-            })
-            .catch((otpError) => {
-              toast.error(otpError.message || "An error occurred while sending OTP");
-            });
-        } else {
+          navigate("/students/dashboard");
+        }  else {
           toast.error(res?.response?.data?.msg);
         }
       })
-      .catch((error) => {
-        toast.error(error.message || "An unexpected error occurred");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+
   };
 
   return (
@@ -78,7 +66,10 @@ const Login = () => {
           <div className="col-12">
             <div className="bg-white rounded10">
             <div className="content-top-agile text-left! mb-20">
-                <h2 className="text-[#1C2023]">Let's Get Started</h2>
+            <h2 className="text-[#1C2023] flex items-center">  <FaAngleLeft 
+                    onClick={() => {
+                    navigate(-1);
+                  }} className="me-1 cursor-pointer" /> Login as a Leader </h2>
                 <p className="mb-0 text-lg">Sign in to continue.</p>
               </div>
               <div className="">

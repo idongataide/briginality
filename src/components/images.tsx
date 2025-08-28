@@ -7,6 +7,9 @@ const Images = {
     authbg6: "/images/auth-bg/auth-img-6.jpg",
     authbg7: "/images/auth-bg/auth-img-7.jpg",
     logo: "/images/logo-dark-text.png",
+    logo2: "/images/logo.png",
+    features2: "/images/features2.png",
+    student: "/images/student.png",
     logodark: "/images/icons/logo-dark.svg",
     success: "/images/icons/checked.png",
     smallLogo: "/images/smallLogo.svg",
@@ -18,6 +21,8 @@ const Images = {
     teambg: "/images/teamsbg.svg",
     profile: "/images/profile.png",
     map: "/images/lagos.png",
+    empty:"/images/empty.svg",
+  
 
     icon: {
       home: "/images/icons/home.svg",

@@ -3,6 +3,9 @@ import React, { useEffect} from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Calendar, Badge, List } from 'antd';
 import { FaArrowRight } from "react-icons/fa";
+import { useNotices } from "@/hooks/useNotices";
+import { useEvents } from "@/hooks/useEvents";
+import dayjs from 'dayjs';
 
 // Mock student data - in real app, this would come from API
 const mockStudentData = {
@@ -65,69 +68,14 @@ const clubCategories: { [key: string]: string } = {
   'study_skills_productivity': 'Innovation & Life Skills'
 };
 
-// Mock notice board data
-const noticeBoardData = [
-  {
-    id: 1,
-    title: 'New Club Meeting Schedule',
-    content: 'Code for Change club will now meet every Saturday at 2 PM. All members are encouraged to attend.',
-    author: 'Code for Change Club',
-    time: 'Just Now',
-    type: 'club-update',
-  },
-  {
-    id: 2,
-    title: 'Poetry Workshop This Weekend',
-    content: 'Join us for a special poetry workshop with guest speaker Sarah Johnson. Learn new writing techniques!',
-    author: 'Poetry & Prose Circle',
-    time: '2 hours ago',
-    type: 'event',
-  },
-  {
-    id: 3,
-    title: 'MUN Conference Registration Open',
-    content: 'Registration for the upcoming Model United Nations conference is now open. Limited spots available.',
-    author: 'Model United Nations',
-    time: '1 day ago',
-    type: 'conference',
-  },
-  {
-    id: 4,
-    title: 'Entrepreneurship Challenge',
-    content: 'Submit your business ideas for the annual entrepreneurship challenge. Prizes worth $500!',
-    author: 'Entrepreneurship & Innovation Club',
-    time: '3 days ago',
-    type: 'competition',
-  }
-];
-
-// Mock upcoming events data
-const upcomingEvents = [
-  {
-    id: 1,
-    title: 'Code for Change Weekly Meeting',
-    club: 'Code for Change',
-    date: '2024-08-17',
-    time: '14:00 - 15:30',
-    type: 'weekly-meeting',
-    meetingLink: 'https://zoom.us/j/123456789',
-    description: 'Weekly coding session focusing on web development basics'
-  },
-  {
-    id: 2,
-    title: 'Poetry Workshop with Guest Speaker',
-    club: 'Poetry & Prose Circle',
-    date: '2024-08-18',
-    time: '16:00 - 17:30',
-    type: 'workshop',
-    meetingLink: 'https://meet.google.com/abc-defg-hij',
-    description: 'Special workshop with published poet Sarah Johnson'
-  }  
-];
+// Notice board data will come from API
 
 const DashboardIndex: React.FC = () => {
   const { pathname } = useLocation();
   const { setNavPath } = useOnboardingStore();
+  const { firstName, lastName, userName } = useOnboardingStore();
+  const { data: notices, isLoading: noticesLoading } = useNotices();
+  const { data: events, isLoading: eventsLoading } = useEvents();
   const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
   console.log(selectedDate);
 
@@ -135,11 +83,22 @@ const DashboardIndex: React.FC = () => {
     setNavPath(pathname.replace("/overview", "dashboard"));
   }, []);
 
-  const getListData = (value: any) => {
-    const date = value.format('YYYY-MM-DD');
-    return upcomingEvents.filter(event => event.date === date);
+  // Filter only upcoming events (events with dates in the future)
+  const getUpcomingEvents = () => {
+    if (!events) return [];
+    
+    const currentDate = dayjs().format('YYYY-MM-DD');
+    return (events || []).filter(event => 
+      dayjs(event.date).isAfter(dayjs(currentDate)) || 
+      dayjs(event.date).isSame(dayjs(currentDate))
+    ).sort((a, b) => dayjs(a.date).valueOf() - dayjs(b.date).valueOf());
   };
 
+  const getListData = (value: any) => {
+    const date = value.format('YYYY-MM-DD');
+    return getUpcomingEvents().filter(event => event.date === date);
+  };
+  
   const dateCellRender = (value: any) => {
     const listData = getListData(value);
     return (
@@ -182,11 +141,11 @@ const DashboardIndex: React.FC = () => {
                     <div className="row">
                       <div className="col-12 col-xl-7">
                         <h2 className="text-white">
-                          Welcome back, <strong>{mockStudentData.fullName}!</strong>
+                          Welcome back, <strong>{(firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userName || "there")}!</strong>
                         </h2>
                         <p className="text-white my-10 fs-16">
                           You have <strong className="text-white">{mockStudentData.clubs.length} clubs</strong> and{" "}
-                          <strong className="text-white">{upcomingEvents.length} upcoming events</strong>.
+                          <strong className="text-white">{getUpcomingEvents().length} upcoming events</strong>.
                         </p>
                         <p className="text-dark my-10 fs-16">
                           Your progress is <strong className="text-warning">excellent!</strong>
@@ -209,22 +168,36 @@ const DashboardIndex: React.FC = () => {
                 </div>
                 <div className="box-body p-0">
                   <div className="media-list media-list-hover" style={{ height: '390px', overflowY: 'auto' }}>
-                    {noticeBoardData.map((notice) => (
-                      <div key={notice.id} className="media bar-0">                        
-                        <div className="media-body fw-500">
-                          <p className="d-flex align-items-center justify-content-between">
-                            <a className="hover-success" href="#">
-                              <strong>{notice.title}</strong>
-                            </a>
-                            <span className="text-fade fw-500 fs-12">{notice.time}</span>
-                          </p>
-                          <p className="text-fade">
-                            {notice.content}
-                          </p>
-                          <small className="">- {notice.author}</small>
+                    {noticesLoading ? (
+                      <div className="text-center p-20">
+                        <div className="spinner-border text-primary" role="status">
+                          <span className="sr-only">Loading...</span>
                         </div>
                       </div>
-                    ))}
+                    ) : notices.length > 0 ? (
+                      notices.slice(0, 5).map((notice: any) => (
+                        <div key={notice.id} className="media bar-0">                        
+                          <div className="media-body fw-500">
+                            <p className="d-flex align-items-center justify-content-between">
+                              <a className="hover-success" href="#">
+                                <strong>{notice.title}</strong>
+                              </a>
+                              <span className="text-fade fw-500 fs-12">
+                                {notice.created_at ? new Date(notice.created_at).toLocaleDateString() : 'N/A'}
+                              </span>
+                            </p>
+                            <p className="text-fade">
+                              {notice.content}
+                            </p>
+                            <small className="">- {notice.author || 'Club Management'}</small>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center p-20 text-fade">
+                        <p>No notices available</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="box-footer text-center p-10">
@@ -308,11 +281,19 @@ const DashboardIndex: React.FC = () => {
                   <h4 className="box-title">Upcoming Events Calendar</h4>
                 </div>
                 <div className="box-body">
-                  <Calendar 
-                    fullscreen={false}
-                    dateCellRender={dateCellRender}
-                    onSelect={(date) => setSelectedDate(date.toDate())}
-                  />
+                  {eventsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <Calendar 
+                      fullscreen={false}
+                      dateCellRender={dateCellRender}
+                      onSelect={(date) => setSelectedDate(date.toDate())}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -324,38 +305,51 @@ const DashboardIndex: React.FC = () => {
                   <h4 className="box-title">Upcoming Events</h4>
                 </div>
                 <div className="box-body">
-                  <List
-                    dataSource={upcomingEvents}
-                    renderItem={(event) => (
-                      <List.Item>
-                        <div className="d-flex align-items-center justify-content-between w-full">
-                          <div className="flex  mb-2">
-                            <div>
-                              <h5 className="font-semibold! mb-1">{event.title}</h5>
-                              <p className=" mb-1">{event.club}</p>                            
-                              <p className="text-md">{event.description}</p>
+                  {eventsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="spinner-border text-primary" role="status">
+                        <span className="sr-only">Loading...</span>
+                      </div>
+                    </div>
+                  ) : getUpcomingEvents().length > 0 ? (
+                    <List
+                      dataSource={getUpcomingEvents()}
+                      renderItem={(event) => (
+                        <List.Item>
+                          <div className="d-flex align-items-center justify-content-between w-full">
+                            <div className="flex mb-2">
+                              <div>
+                                <h5 className="font-semibold! mb-1">{event.title}</h5>
+                                <p className="mb-1">{event.club}</p>                            
+                                <p className="text-md">{event.description}</p>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex justify-between items-left">
-                              <p className="text-md ">
-                                {new Date(event.date).toLocaleDateString()} • {event.time}
-                              </p>
-                          </div>
-                          
-                          <div className="flex flex-column">
-                           
-                            <Button 
-                              type="primary" 
-                              size="small"
-                              onClick={() => window.open(event.meetingLink, '_blank')}
-                            >
-                              Join Meeting
-                            </Button>
-                          </div>
-                        </div>
-                      </List.Item>
-                    )}
-                  />
+                            <div className="flex justify-between items-left">
+                                <p className="text-md">
+                                  {dayjs(event.date).format('MMMM D, YYYY')} • {event.time}
+                                </p>
+                            </div>
+                            
+                            <div className="flex flex-column">
+                                                              <Button 
+                                type="primary" 
+                                size="small"
+                                onClick={() => event.meetingLink && window.open(event.meetingLink, '_blank')}
+                                disabled={!event.meetingLink}
+                              >
+                                Join Meeting
+                              </Button>
+                              </div>
+                            </div>
+                        </List.Item>
+                      )}
+                    />
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500 text-lg">No upcoming events at the moment.</p>
+                      <p className="text-gray-400">Check back later for new events and meetings.</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

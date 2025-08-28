@@ -13,7 +13,7 @@ interface Props {
 const OnboardingLayout: React.FC<Props> = ({ children, type = "student" }) => {
     const onboardingNav = useOnboardingStore();
     const leadershipNav = useLeadershipStore();
-    const navPath = type === "leadership" ? leadershipNav : onboardingNav;
+    const navPath = type === "student" ? onboardingNav : leadershipNav;
     const bgImage =
     navPath?.navPath === "club-preference"
     ? Images.authbg2
@@ -24,15 +24,17 @@ const OnboardingLayout: React.FC<Props> = ({ children, type = "student" }) => {
     : navPath?.navPath === "success"
     ? Images.authbg5
     : navPath?.navPath === "leadership-basic-info"
-    ? Images.authbg6
+    ? Images.authbg5
     : navPath?.navPath === "leadership-club-preference"
-    ? Images.authbg7
-    // : navPath?.navPath === "leadership-experience"
-    // ? Images.authbg8
-    // : navPath?.navPath === "leadership-accomodations"
-    // ? Images.authbg9
-    // : navPath?.navPath === "leadership-success"
-    // ? Images.authbg10
+    ? Images.authbg6
+    : navPath?.navPath === "leadership-experience"
+    ? Images.authbg3
+    : navPath?.navPath === "leadership-case-study"
+    ? Images.authbg4
+    : navPath?.navPath === "leadership-final-notes"
+    ? Images.authbg5
+    : navPath?.navPath === "leadership-success"
+    ? Images.authbg5
     : Images.authbg;
   
     return (

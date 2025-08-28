@@ -1,19 +1,13 @@
-import { getBookings, getBookingsCount, getDailyPayout, getDashboardOperators, getRemittedRevenue, getRevenues } from "@/api/bookingsApi";
-import { getCustomerCount, getCustomers, getCustomersDetails } from "@/api/customersApi";
-import { getOperators, getOperatorData, getDrivers, getDriversByOperatorId, getAssetsbyCordinate, getAssets, getOperatorCount, getAssetsByOperatorId } from "@/api/operatorsApi";
-import { getFees, getFeesCategory, getProfile, getServices, getFeesCount, getServicesCount, getStakeholdersCount, getBisProcessList, getNotifications, getStakeholders, getAreas } from "@/api/settingsApi";
-import { getTeams, getTeamsCount } from "@/api/teamsApi";
-import { getTransactionCount, TransactionList } from "@/api/transactionsApi";
-import { getBanksList } from "@/api/banks";
-import { getStakeholderPayouts } from "@/api/bookingsApi";
+import { getApplicants, getApplicantDetails, getRoleApplications, getWaitlist, getRoleApplicationDetails, approveRoleApplication, rejectRoleApplication, approveClubApplication, rejectClubApplication } from "@/api/customersApi";
+import { getClubsByRegion, getMembersByRegion, getRegionClubs, createRegionalClub, getApprovedLeaders, getRegionalClubMembers } from "@/api/useAdmin";
 
 import useSWR from "swr";
 
-export const useAllCustomers = () => {
+export const useApplicants = () => {
   const { data, isLoading, mutate } = useSWR(
-    `users/`,
+    `admin/club-applications`,
     () => {
-      return getCustomers().then((res) => {
+      return getApplicants().then((res) => {
         return res?.data;
       });
     },
@@ -26,30 +20,14 @@ export const useAllCustomers = () => {
   return { data, isLoading, mutate };
 };
 
-export const useCustomerCount = () => {
-    const { data, isLoading, mutate } = useSWR(
-      `/users?component=count-status`,
-      () => {
-        return getCustomerCount().then((res) => {
-          return res;
-        });
-      },
-      {
-        revalidateOnFocus: false,
-      }
-    );
-    return { data, isLoading, mutate };
-};
-
-export const useCustomersData = (userId: string) => {
+export const useWaitlist = () => {
   const { data, isLoading, mutate } = useSWR(
-    `users/`,
+    `admin/waitlist`,
     () => {
-      return getCustomersDetails(userId).then((res) => {
+      return getWaitlist().then((res) => {
         return res?.data;
       });
     },
-
     {
       revalidateOnFocus: false,
     },
@@ -58,16 +36,15 @@ export const useCustomersData = (userId: string) => {
   return { data, isLoading, mutate };
 };
 
-
-export const useAllOperators = () => {
+export const useApplicantDetails = (applicationId: string | undefined) => {
+  const shouldFetch = Boolean(applicationId);
   const { data, isLoading, mutate } = useSWR(
-    `users/operators/`,
+    shouldFetch ? `admin/club-applications/${applicationId}` : null,
     () => {
-      return getOperators().then((res) => {
+      return getApplicantDetails(applicationId as string).then((res) => {
         return res?.data;
       });
     },
-
     {
       revalidateOnFocus: false,
     },
@@ -76,16 +53,14 @@ export const useAllOperators = () => {
   return { data, isLoading, mutate };
 };
 
-
-export const useOperatorData = (uid: string) => {
+export const useRoleApplications = () => {
   const { data, isLoading, mutate } = useSWR(
-    `users/operators/${uid}/`,
+    `admin/role-applications`,
     () => {
-      return getOperatorData(uid).then((res) => {
+      return getRoleApplications().then((res) => {
         return res?.data;
-      }); 
+      });
     },
-
     {
       revalidateOnFocus: false,
     },
@@ -94,31 +69,15 @@ export const useOperatorData = (uid: string) => {
   return { data, isLoading, mutate };
 };
 
-
-export const useOperatorCount = (operatorCount: string) => {
+export const useRoleApplicationDetails = (applicationId: string | undefined) => {
+  const shouldFetch = Boolean(applicationId);
   const { data, isLoading, mutate } = useSWR(
-    operatorCount ? `/users/operators?component=${operatorCount}` : null,
+    shouldFetch ? `admin/role-applications/${applicationId}` : null,
     () => {
-      return getOperatorCount(operatorCount).then((res) => {
+      return getRoleApplicationDetails(applicationId as string).then((res) => {
         return res?.data;
       });
     },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-  return { data, isLoading, mutate };
-};
-
-export const useAllTeam = () => {
-  const { data, isLoading, mutate } = useSWR(
-    `/accounts/admin-user`,
-    () => {
-      return getTeams().then((res) => {
-        return res?.data;
-      });
-    },
-
     {
       revalidateOnFocus: false,
     },
@@ -127,477 +86,78 @@ export const useAllTeam = () => {
   return { data, isLoading, mutate };
 };
 
-export const useBanksList = () => {
-  const { data, isLoading, mutate } = useSWR(
-    '/banks',
-    () => {
-      return getBanksList().then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
+export const useApproveRoleApplication = () => {
+  const approveApplication = async (applicationId: string) => {
+    try {
+      const result = await approveRoleApplication(applicationId);
+      return result;
+    } catch (error) {
+      throw error;
     }
-  );
-  return { data, isLoading, mutate };
-};
-
-export const useGetAssets = () => {
-  const { data, isLoading, mutate } = useSWR(
-    `/users/assets`,
-    () => {
-      return getAssets().then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useGetAssetsbyCord = (longitude: string, latitude: string) => {
-  const { data, isLoading, mutate } = useSWR(
-    `/users/assets`,
-    () => {
-      return getAssetsbyCordinate(longitude,latitude).then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-
-export const useAssetsByOperatorId = (operatorId: string | undefined) => {
-    const { data, isLoading, mutate } = useSWR(
-      operatorId ? `/users/assets?operator_id=${operatorId}` : null,
-      (url) => {
-        if (!url || !operatorId) return null; 
-        return getAssetsByOperatorId(operatorId).then((res) => {
-          return res?.data;
-        });
-      },
-      {
-        revalidateOnFocus: false,
-      }
-    );
-  
-    return { data, isLoading, mutate };
-  };
-  
-
-export const useGetDrivers = () => {
-  const { data, isLoading, mutate } = useSWR(
-    `/users/drivers/`,
-    () => {
-      return getDrivers().then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useGetDriversByOperatorId = (operatorId: string | undefined) => {
-  const { data, isLoading, mutate } = useSWR(
-    operatorId ? `/users/drivers?operator_id=${operatorId}` : null,
-    (url) => {
-      if (!url || !operatorId) return null; 
-      return getDriversByOperatorId(operatorId).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    }
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useAllBookings = (ride_status: string = '0', cancelledBy?: string, startDate?: string, endDate?: string) => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings?ride_status=${ride_status}${cancelledBy ? `&cancelled_by=${cancelledBy}` : ''}${startDate ? `&start_date=${startDate}` : ''}${endDate ? `&end_date=${endDate}` : ''}`,
-    () => {
-      return getBookings(ride_status, cancelledBy, startDate, endDate).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-
-export const useRevenues = (operatorEarning: string) => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings?component=${operatorEarning}`,
-    () => {
-      return getRevenues(operatorEarning).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useAllBookingsCount = (countStatus: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings?component=${countStatus}`,
-    () => {
-      return getBookingsCount(countStatus).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-
-
-export const useAllService = (type: string | undefined) => {
-  const { data, isLoading, mutate } = useSWR(
-    type ? `/settings/services?type=${type}` : null,
-    (url) => {
-      if (!url || !type) return null;
-      return getServices(type).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-
-export const useTransactions = () => {
-  const { data, isLoading, mutate } = useSWR(
-    '/payments/get-transactions',
-    () => {
-      return TransactionList().then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useServices = () => {
-  const { data, isLoading, mutate } = useSWR(
-    `/settings/services`,
-    () => {
-      return getServices('').then((res) => {
-        return res;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useFees = () => {
-  const { data, isLoading, mutate } = useSWR(
-    '/settings/fees',
-    () => {
-      return getFees().then((res) => {
-        return res;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useAdminProfile = () => {
-  const { data, isLoading, mutate } = useSWR(
-    `/accounts/profile/`,
-    () => {
-      return getProfile().then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useGetNotification = () => {
-    const { data, isLoading, mutate } = useSWR(
-      `/accounts/notification`,
-      () => {
-        return getNotifications().then((res) => {
-          return res?.data;
-        });
-      },
-  
-      {
-        revalidateOnFocus: false,
-      },
-    );
-  
-    return { data, isLoading, mutate };
   };
 
-export const useAllTeamsCount = (countStatus: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/accounts/admin-user?component=${countStatus}`,
-    () => {
-      return getTeamsCount(countStatus).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
+  return { approveApplication };
 };
 
-export const useAllTransCount = (countStatus: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/payments/get-transactions?component=${countStatus}`,
-    () => {
-      return getTransactionCount(countStatus).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-
-export const useDashboardOperators = (date: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings/get-dashboard-ops${date}`,
-    () => {
-      return getDashboardOperators(date).then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-
-export const useRemittedRevenue = (date: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings/stakeholder-daily-revenue${date}`,
-    () => {
-      return getRemittedRevenue(date).then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useStakeholderPayouts = (date: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings/stakeholder-daily-revenue${date}`,
-    () => {
-      return getStakeholderPayouts().then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useDailyPayout = (date: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/towings/daily-revenue-operator${date}`,
-    () => {
-      return getDailyPayout(date).then((res) => {
-        return res?.data;
-      });
-    },
-
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useFeesCount = () => {
-  const { data, isLoading, mutate } = useSWR<
-    { success: boolean; msg: string; data: { total: number }[] } | undefined
-  >(
-    `/settings/fees?component=count`,
-    () => {
-      return getFeesCount().then((res) => {
-        return res;
-      });
-    },
-    {
-      revalidateOnFocus: true,
+export const useRejectRoleApplication = () => {
+  const rejectApplication = async (applicationId: string, notes?: string) => {
+    try {
+      const result = await rejectRoleApplication(applicationId, notes);
+      return result;
+    } catch (error) {
+      throw error;
     }
-  );
-  return { data, isLoading, mutate };
+  };
+
+  return { rejectApplication };
 };
 
-export const useGetFees = (feeVariable: string = '0') => {
-  const { data, isLoading, mutate } = useSWR(
-    `/settings/fees?component=${feeVariable}`,
-    () => {
-      return getFeesCategory(feeVariable).then((res) => {
-        return res?.data;
-      });
-    },
-    {
-      revalidateOnFocus: false,
-    },
-  );
-
-  return { data, isLoading, mutate };
-};
-
-export const useServicesCount = () => {
-  const { data, isLoading, mutate } = useSWR(
-    `/settings/services?component=count`,
-    () => {
-      return getServicesCount().then((res) => {
-        return res;
-      });
-    },
-    {
-      revalidateOnFocus: false,
+export const useApproveClubApplication = () => {
+  const approveApplication = async (applicationId: string) => {
+    try {
+      const result = await approveClubApplication(applicationId);
+      return result;
+    } catch (error) {
+      throw error;
     }
+  };
+
+  return { approveApplication };
+};
+
+export const useRejectClubApplication = () => {
+  const rejectApplication = async (applicationId: string, notes?: string) => {
+    try {
+      const result = await rejectClubApplication(applicationId, notes);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return { rejectApplication };
+};
+
+
+export const useClubsByRegion = (regionId: string) => {
+  const { data, isLoading, mutate } = useSWR(
+    `admin/club-groups/${regionId}`,
+    () => {
+      return getClubsByRegion(regionId).then((res) => {
+        return res?.data;
+      });
+    },
   );
+
   return { data, isLoading, mutate };
 };
 
-
-export const useStakeholdersCount = () => {
-    const { data, isLoading, mutate } = useSWR(
-      `/users/stakeholders?component=count`,
-      () => {
-        return getStakeholdersCount().then((res) => {
-          return res;
-        });
-      },
-      {
-        revalidateOnFocus: false,
-      }
-    );
-    return { data, isLoading, mutate };
-};
-
-
-
-export const useGetProcess = () => {
-    const { data, isLoading, mutate } = useSWR(
-      `/users/biz-process/`,
-      () => {
-        return getBisProcessList().then((res) => {
-          return res?.data;
-        });
-      },
-  
-      {
-        revalidateOnFocus: false,
-      },
-    );
-  
-    return { data, isLoading, mutate };
-};
-  
-
-export const useLagosCities = () => {
-  const cities = [
-    "Agege",
-    "Ajeromi-Ifelodun",
-    "Alimosho",
-    "Amuwo-Odofin",
-    "Apapa",
-    "Badagry",
-    "Epe",
-    "Eti-Osa",
-    "Ibeju-Lekki",
-    "Ifako-Ijaiye",
-    "Ikeja",
-    "Ikorodu",
-    "Kosofe",
-    "Lagos Island",
-    "Lagos Mainland",
-    "Mushin",
-    "Ojo",
-    "Oshodi-Isolo",
-    "Shomolu",
-    "Surulere"
-  ];
-
-  return { data: cities, isLoading: false };
-};
-
-export const useStakeholders = () => {
+export const useRegionalClubMembers = (regionId: string | undefined) => {
+  const shouldFetch = Boolean(regionId);
   const { data, isLoading, mutate } = useSWR(
-    `/users/stakeholders`,
+    shouldFetch ? `admin/regions/${regionId}/members` : null,
     () => {
-      return getStakeholders().then((res) => {
+      return getRegionalClubMembers(regionId as string).then((res) => {
         return res?.data;
       });
     },
@@ -609,12 +169,54 @@ export const useStakeholders = () => {
   return { data, isLoading, mutate };
 };
 
-
-export const useGetArea = () => {
+export const useMembersByRegion = (regionId: string | undefined) => {
+  const shouldFetch = Boolean(regionId);
   const { data, isLoading, mutate } = useSWR(
-    `/settings/areas/`,
+    shouldFetch ? `admin/regions/${regionId}/members` : null,
     () => {
-      return getAreas().then((res) => {
+      return getMembersByRegion(regionId as string).then((res) => {
+        return res?.data;
+      });
+    },
+    {
+      revalidateOnFocus: false,
+    },
+  );
+
+  return { data, isLoading, mutate };
+};
+
+export const useRegionClubs = (regionId: string | undefined) => {
+  const { data, isLoading, mutate } = useSWR(
+    `/admin/regions/${regionId}/clubs`,
+    () => {
+      return getRegionClubs(regionId as string).then((res) => {
+        return res?.data;
+      });
+    },
+  );
+
+  return { data, isLoading, mutate };
+};
+
+export const useCreateRegionalClub = () => {
+  const createClub = async (data: any) => {
+    try {
+      const result = await createRegionalClub(data);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return { createClub };
+};
+
+export const useApprovedLeaders = () => {
+  const { data, isLoading, mutate } = useSWR(
+    `admin/approved-leaders`,
+    () => {
+      return getApprovedLeaders().then((res) => {
         return res?.data;
       });
     },

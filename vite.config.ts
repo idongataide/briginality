@@ -33,8 +33,8 @@ export default defineConfig(({ mode }) => {
       port: 5173,
         allowedHosts: [""],
         proxy: {
-          '/admins': {
-            target: 'https://resq-user.onrender.com/',
+          '/api': {
+            target: 'https://bridginality.ufainiibom.com',
             changeOrigin: true,
             secure: false,
             rewrite: (path) => path

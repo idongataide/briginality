@@ -1,23 +1,49 @@
 import React from 'react';
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { FaHome, FaLock, FaSignOutAlt, FaUserGraduate, FaUserTie, FaList, FaCoins, FaUser, FaCog, FaUsers, FaCalendar } from "react-icons/fa";
 import { FaBell } from "react-icons/fa";
 import Images from '@/components/images';
+import { useOnboardingStore } from '@/global/store';
+import { useLeadershipStore } from '@/global/leadershipStore';
+import { FaMessage } from 'react-icons/fa6';
+import { Modal } from 'antd';
 
 const DashboardLayout: React.FC = () => {
   const { pathname } = useLocation();
-  
-  // Determine if we're in admin or student route
+  const { userName: generalUserName } = useOnboardingStore();
+  const { userName: leadershipUserName } = useLeadershipStore();
+  const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+
+  const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const handleConfirmLogout = () => {
+    localStorage.clear();
+    useOnboardingStore.persist.clearStorage();
+    useLeadershipStore.persist.clearStorage();
+    navigate("/onboarding", { replace: true });
+    setShowLogoutModal(false);
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
+  };
+
+  // Determine if we'sre in admin, student, or leadership route
   const isAdminRoute = pathname.includes('/admin');
   const isStudentRoute = pathname.includes('/students');
-  console.log(isStudentRoute);
+  const isLeadershipRoute = pathname.includes('/leadership');
   
   const adminNavData = [
     { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
     { id: 2, name: "Students", icon: <FaUserGraduate />, URL: "students" },
+    { id: 2, name: "Waitlist", icon: <FaUserGraduate />, URL: "waitlist" },
     { id: 3, name: "Leadership", icon: <FaUserTie />, URL: "leaderships" },
-    { id: 4, name: "Regional Club", icon: <FaList />, URL: "regional-club" },
+    { id: 4, name: "Regional Club", icon: <FaList />, URL: "regional-clubs" },
+    { id: 4, name: "Clubs", icon: <FaList />, URL: "clubs" },
     { id: 5, name: "Bridge Points", icon: <FaCoins />, URL: "bridge-points" },
     { id: 6, name: "Profile", icon: <FaUser />, URL: "profile" },
   ];
@@ -26,15 +52,31 @@ const DashboardLayout: React.FC = () => {
     { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
     { id: 2, name: "Meetings", icon: <FaCalendar />, URL: "meetings" },
     { id: 3, name: "Calendar", icon: <FaCalendar />, URL: "calendar" },
+    { id: 4, name: "Notices", icon: <FaBell />, URL: "notices" },
     { id: 3, name: "Clubs", icon: <FaUsers />, URL: "clubs" },
+    { id: 3, name: "Chat", icon: <FaMessage />, URL: "chat" },
     { id: 4, name: "Points", icon: <FaCoins />, URL: "points" },
     { id: 5, name: "Profile", icon: <FaUser />, URL: "profile" },
   ];
 
+  const leadershipNavData = [
+    { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
+    { id: 2, name: "Meetings", icon: <FaCalendar />, URL: "meetings" },
+    { id: 3, name: "Calendar", icon: <FaCalendar />, URL: "calendar" },
+    { id: 4, name: "Notices", icon: <FaBell />, URL: "notices" },
+    { id: 5, name: "Clubs", icon: <FaUsers />, URL: "clubs" },
+    { id: 6, name: "Chat", icon: <FaMessage />, URL: "chat" },
+    { id: 7, name: "Points", icon: <FaCoins />, URL: "points" },
+    { id: 8, name: "Profile", icon: <FaUser />, URL: "profile" },
+  ];
+
   // Use appropriate navigation data based on route
-  const navData = isAdminRoute ? adminNavData : studentNavData;
-  const basePath = isAdminRoute ? "/admin" : "/students";
-  const greeting = isAdminRoute ? "Hello Admin 👋" : "Hello Michele 👋";
+  const navData = isAdminRoute ? adminNavData : isStudentRoute ? studentNavData : isLeadershipRoute ? leadershipNavData : studentNavData;
+  const basePath = isAdminRoute ? "/admin" : isStudentRoute ? "/students" : isLeadershipRoute ? "/leadership" : "/students";
+  const fallbackName = isAdminRoute ? 'Admin' : isLeadershipRoute ? 'Leader' : 'Michele';
+  const selectedUserName = isLeadershipRoute ? leadershipUserName : generalUserName;
+  const greetingName = selectedUserName && selectedUserName.trim().length > 0 ? selectedUserName : fallbackName;
+  const greeting = `Hello ${greetingName} 👋`;
 
   const siderBarView = true; 
   const handleStart = pathname.split("/")[1] === "" ? true : false;
@@ -42,8 +84,8 @@ const DashboardLayout: React.FC = () => {
   
   return (
     <div className="wrapper min-h-screen">
-      <header className="main-header border-b border-gray-200 bg-[#F9FAFB] fixed! w-full">
-        <div className="d-flex align-items-center logo-box justify-content-start fixed">        
+      <header className="main-header border-b border-gray-200 bg-[#f24848] fixed! w-full">
+        <div className="d-flex align-items-center  bg-[#f24848]! logo-box justify-content-start fixed">        
           <Link to="/" className="logo flex! items-center justify-center">
             {/* logo*/}
             <div className="logo-lg">
@@ -57,7 +99,7 @@ const DashboardLayout: React.FC = () => {
         <nav className="navbar navbar-static-top">
           {/* Sidebar toggle button*/}
           <div className="">
-            <div className="text-[#5A5959] text-2xl font-semibold">
+            <div className="text-[#fff] text-2xl font-semibold">
                {greeting}
             </div>
           </div>
@@ -143,7 +185,7 @@ const DashboardLayout: React.FC = () => {
           </div>
         </nav>
       </header>
-      <aside className="main-sidebar border-r border-gray-200 fixed bg-[#F9FAFB]">
+      <aside className="main-sidebar border-r border-gray-200 fixed bg-[#f24848]">
         {/* sidebar*/}
         <section className="sidebar position-relative">
           <div className="multinav">
@@ -163,7 +205,7 @@ const DashboardLayout: React.FC = () => {
                             ${
                               isActive
                                 ? "text-[#F9607F] bg-[#f6e8eb]  rounded-xl"
-                                : "hover:bg-[#eef2ff] text-[#172b4c] hover:text-[#7D8489]"
+                                : "hover:bg-[#eef2ff] text-[#fff] hover:text-[#7D8489]"
                             }
                           `}
                         >
@@ -200,18 +242,29 @@ const DashboardLayout: React.FC = () => {
             className="link"
             data-bs-toggle="tooltip"
             title="Logout"
+            onClick={handleLogout}
           >
             <FaSignOutAlt />
           </Link>
         </div>
       </aside>
+      <Modal
+        title="Confirm Logout"
+        open={showLogoutModal}
+        onOk={handleConfirmLogout}
+        onCancel={handleCancelLogout}
+        okText="Logout"
+        cancelText="Cancel"
+      >
+        <p>Are you sure you want to log out?</p>
+      </Modal>
       <div className="content-wrapper mt-25!">
         <div className="container-full p-15">
           <Outlet />
         </div>
       </div>
 
-      <footer className="main-footer">
+      {/* <footer className="main-footer">
         <div className="pull-right d-none d-sm-inline-block">
           <ul className="nav nav-primary nav-dotted nav-dot-separated justify-content-center justify-content-md-end">
             <li className="nav-item">
@@ -223,7 +276,7 @@ const DashboardLayout: React.FC = () => {
         </div>
         © 2024 <Link to="#">Leadership</Link>.
         All Rights Reserved.
-      </footer>
+      </footer> */}
     </div>
   );
 };

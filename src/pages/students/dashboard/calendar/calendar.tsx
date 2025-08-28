@@ -152,7 +152,7 @@ const CalendarPage: React.FC = () => {
       <Card 
         key={meeting.id} 
         className="mb-4"
-        style={{ borderLeft: `4px solid ${regionData.color}` }}
+        style={{ borderLeft: `4px solid #3898CB` }}
       >
         <div className="flex justify-between items-start">
           <div className="flex-1">

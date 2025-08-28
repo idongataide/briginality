@@ -1,18 +1,20 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 // Helper function to safely access localStorage
 const getAuthTokens = () => {
   if (typeof window !== 'undefined') {
-    const tokens = localStorage.getItem("adminToken");
+    const tokens = localStorage.getItem("apiToken");
     return tokens ? JSON.parse(tokens) : null;
   }
   return null;
 };
 
 export const axiosAPIInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/admins',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
 
@@ -38,9 +40,10 @@ axiosAPIInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem("adminToken");
+        toast.error("You don't have access to view this page");
+        localStorage.removeItem("apiToken");
         localStorage.clear();
-        window.location.href = "/login";
+        // window.location.href = "/login"; // Commenting out the redirect
       }
     }
     return Promise.reject(error);

@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router-dom";
 import { routes } from "./router/router";
 import { ConfigProvider } from "antd";
 // import "antd/dist/reset.css";
+import { ToastProvider } from "./global/ToastProvider";
 import "./index.css";
 import { HelmetProvider } from "react-helmet-async";
 
@@ -27,9 +28,11 @@ const App: React.FC = () => {
   return (
     <div>
       <HelmetProvider>
-        <ConfigProvider theme={themeConfig}>
-           <RouterProvider router={routes} />
-        </ConfigProvider>
+        <ToastProvider>
+          <ConfigProvider theme={themeConfig}>
+            <RouterProvider router={routes} />
+          </ConfigProvider>
+        </ToastProvider>
       </HelmetProvider>
     </div>
   );

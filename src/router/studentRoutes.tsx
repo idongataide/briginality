@@ -8,8 +8,19 @@ import LoadingScreen from "@/layouts/LoadingScreen";
 import DashboardIndex from "@/pages/students/dashboard/dashboardIndex";
 import Meetings from "@/pages/students/dashboard/meetings/meetings";
 import CalendarPage from "@/pages/students/dashboard/calendar/calendar";
+import GroupChat from "@/pages/students/dashboard/chat/chat";
+import ProfilePage from "@/pages/students/dashboard/profile/profile";
+import Notices from "@/pages/students/dashboard/notices/notices";
 
 const studentRoutes: RouteObject[] = [
+  {
+    path: "student/login",
+    element: <OnboardingLayout />,
+    children: [
+      { index: true, element: <Login /> },
+      { path: "forgot-password", element: <AuthPath /> },
+    ],
+  },
   {
     path: "/login",
     element: <OnboardingLayout />,
@@ -43,7 +54,6 @@ const studentRoutes: RouteObject[] = [
         element: (
           <Suspense fallback={<LoadingScreen />}>
             <DashboardIndex />
-            {/* <p>Home</p> */}
           </Suspense>
         ),
       },
@@ -56,10 +66,34 @@ const studentRoutes: RouteObject[] = [
         ),
       },     
       {
+        path: "/students/chat",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <GroupChat />
+          </Suspense>
+        ),
+      }, 
+      {
         path: "/students/calendar",
         element: (
           <Suspense fallback={<LoadingScreen />}>
             <CalendarPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/students/notices",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <Notices />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/students/profile",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <ProfilePage />
           </Suspense>
         ),
       },

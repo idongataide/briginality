@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -8,18 +8,28 @@ import { useOnboardingStore } from "@/global/store";
 
 
 const Experiences = () => {
-  const { setNavPath } = useOnboardingStore();
+  const { setNavPath, studentSignupData, setStudentSignupData } = useOnboardingStore();
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
-  const navPath = useOnboardingStore();
 
+  useEffect(() => {
+    // Load existing data if available
+    if (studentSignupData.experience) {
+      form.setFieldsValue(studentSignupData.experience);
+    }
+  }, [form, studentSignupData.experience]);
 
   const onFinish = async (values: any) => {
     try {
       setLoading(true);
+      
+      // Save data to store
+      setStudentSignupData("experience", values);
+      
       console.log("Form values:", values);
-      toast.success("Form submitted successfully");
+      toast.success("Experience information saved successfully");
+      
       setNavPath("accomodations");
       navigate('/signup');
     } catch (error) {
@@ -62,7 +72,8 @@ const Experiences = () => {
                 <Button
                   type="default"
                   onClick={() => {
-                    navPath.setNavPath("club-preference");   
+                    setNavPath("club-preference");   
+                    navigate('/signup');
                   }}               
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >
@@ -74,7 +85,7 @@ const Experiences = () => {
                   loading={loading}
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >
-                  Submit & Continue
+                  Save & Continue
                 </Button>
               </div>
             </Form.Item>

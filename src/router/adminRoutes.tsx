@@ -9,6 +9,12 @@ import Students from "@/pages/admin/dashboard/students/students";
 import StudentsDetails from "@/pages/admin/dashboard/students/studentsDetails";
 import LeadershipList from "@/pages/admin/dashboard/leaderships/leadershipList";
 import LeadershipDetails from "@/pages/admin/dashboard/leaderships/leadershipDetails";
+import ClubGroups from "@/pages/admin/dashboard/clubs/ClubGroups";
+import Clubs from "@/pages/admin/dashboard/clubs/Clubs";
+import RegionalClubs from "@/pages/admin/dashboard/regionalClub/regionalClub";
+import Waitlist from "@/pages/admin/dashboard/waitlist/waitlist";
+import ProfilePage from "@/pages/leadership/dashboard/profile/profile";
+import RegionalClubMembers from "@/pages/admin/dashboard/regionalClub/RegionalClubMembers";
 
 const adminRoutes: RouteObject[] = [
     {
@@ -61,6 +67,54 @@ const adminRoutes: RouteObject[] = [
             element: (
               <Suspense fallback={<LoadingScreen />}>
                 <LeadershipDetails /> 
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/waitlist",
+            element: (
+              <Suspense fallback={<LoadingScreen />}>
+                <Waitlist />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/clubs",
+            element: (
+              <Suspense fallback={<LoadingScreen />}>
+                <Clubs />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/club-groups/:region_id",
+            element: (
+              <Suspense fallback={<LoadingScreen />}>
+                <ClubGroups />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/regions/:region_id/members",
+            element: (
+              <Suspense fallback={<LoadingScreen />}>
+                <RegionalClubMembers />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/regional-clubs",
+            element: (
+              <Suspense fallback={<LoadingScreen />}>
+                <RegionalClubs />
+              </Suspense>
+            ),
+          },
+          {
+            path: "/admin/profile",
+            element: (
+              <Suspense fallback={<LoadingScreen />}>
+                <ProfilePage />
               </Suspense>
             ),
           },

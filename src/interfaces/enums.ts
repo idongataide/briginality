@@ -12,7 +12,7 @@ export enum ResponseValue {
   STATUS201 = 201,
   STATUS200 = 200,
   STATUS204 = 204,
-  SUCCESS = "ok",
+  SUCCESS = "success",
   NETWORKERROR = "Network Error",
   UNDEFINED = "undefined",
 }

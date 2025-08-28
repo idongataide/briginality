@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notices API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .response { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
+        label { display: block; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Notices API Test</h1>
+    
+    <div class="test-section">
+        <h2>Create Notice</h2>
+        <form id="createForm">
+            <label>Title: <input type="text" id="createTitle" value="Important Club Meeting - November 2025"></label>
+            <label>Content: <textarea id="createContent" rows="5">Dear Club Members,
+
+We are pleased to announce our monthly club meeting scheduled for November 12th, 2025 at 2:00 PM in the main conference room.
+
+Agenda:
+1. Review of November activities
+2. Planning for upcoming events
+3. Budget discussion
+4. New member introductions
+5. Q&A session
+
+Please confirm your attendance by replying to this notice. Light refreshments will be provided.
+
+Looking forward to seeing everyone there!
+
+Best regards,
+Club Management</textarea></label>
+            <label>Club ID: <input type="number" id="createClubId" value="12"></label>
+            <button type="submit">Create Notice</button>
+        </form>
+        <div id="createResponse" class="response"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Get All Notices</h2>
+        <button onclick="getNotices()">Get Notices</button>
+        <div id="getResponse" class="response"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Update Notice</h2>
+        <form id="updateForm">
+            <label>Notice ID: <input type="number" id="updateId" value="4"></label>
+            <label>Title: <input type="text" id="updateTitle" value="Important Club Meeting - November 2025"></label>
+            <label>Content: <textarea id="updateContent" rows="5">Dear Club Members,
+
+We are pleased to announce our monthly club meeting scheduled for November 12th, 2025 at 3:00 PM in the main conference room.
+
+Agenda:
+1. Review of November activities
+2. Planning for upcoming events
+3. Budget discussion
+4. New member introductions
+5. Q&A session
+
+Please confirm your attendance by replying to this notice. Light refreshments will be provided.
+
+Looking forward to seeing everyone there!
+
+Best regards,
+Club Management</textarea></label>
+            <label>Club ID: <input type="number" id="updateClubId" value="12"></label>
+            <button type="submit">Update Notice</button>
+        </form>
+        <div id="updateResponse" class="response"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Delete Notice</h2>
+        <form id="deleteForm">
+            <label>Notice ID: <input type="number" id="deleteId" value="5"></label>
+            <button type="submit">Delete Notice</button>
+        </form>
+        <div id="deleteResponse" class="response"></div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // Create Notice
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                title: document.getElementById('createTitle').value,
+                content: document.getElementById('createContent').value,
+                club_id: parseInt(document.getElementById('createClubId').value)
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/notices`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                document.getElementById('createResponse').innerHTML = `<strong>Status: ${response.status}</strong><br>${JSON.stringify(result, null, 2)}`;
+            } catch (error) {
+                document.getElementById('createResponse').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        });
+
+        // Get Notices
+        async function getNotices() {
+            try {
+                const response = await fetch(`${API_BASE}/notices`);
+                const result = await response.json();
+                document.getElementById('getResponse').innerHTML = `<strong>Status: ${response.status}</strong><br>${JSON.stringify(result, null, 2)}`;
+            } catch (error) {
+                document.getElementById('getResponse').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        }
+
+        // Update Notice
+        document.getElementById('updateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('updateId').value;
+            const data = {
+                title: document.getElementById('updateTitle').value,
+                content: document.getElementById('updateContent').value,
+                club_id: parseInt(document.getElementById('updateClubId').value),
+                _method: 'PUT'
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/notices/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                document.getElementById('updateResponse').innerHTML = `<strong>Status: ${response.status}</strong><br>${JSON.stringify(result, null, 2)}`;
+            } catch (error) {
+                document.getElementById('updateResponse').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        });
+
+        // Delete Notice
+        document.getElementById('deleteForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('deleteId').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/notices/${id}`, {
+                    method: 'DELETE'
+                });
+                const result = await response.json();
+                document.getElementById('deleteResponse').innerHTML = `<strong>Status: ${response.status}</strong><br>${JSON.stringify(result, null, 2)}`;
+            } catch (error) {
+                document.getElementById('deleteResponse').innerHTML = `<strong>Error:</strong> ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

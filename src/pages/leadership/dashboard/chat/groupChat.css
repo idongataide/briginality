@@ -1,0 +1,130 @@
+/* Group Chat Styles */
+.chat-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.chat-item {
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.chat-item:hover {
+  background-color: #fef5fa;
+  border-left-color: #3898CB;
+}
+
+.chat-item.bg-primary-light {
+  background-color: #EBF5FA !important;
+  border-left-color: #3898CB;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.chat-box-one2 {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.chat-box-one2::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-box-one2::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.chat-box-one2::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.chat-box-one2::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.max-w-p80 {
+  max-width: 80%;
+}
+
+.status-success {
+  color: #28a745;
+}
+
+.status-warning {
+  color: #ffc107;
+}
+
+.status-danger {
+  color: #dc3545;
+}
+
+.status-secondary {
+  color: #6c757d;
+}
+
+/* Avatar status indicators */
+.avatar {
+  position: relative;
+}
+
+.avatar .status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.status-indicator.online {
+  background-color: #28a745;
+}
+
+.status-indicator.away {
+  background-color: #ffc107;
+}
+
+.status-indicator.offline {
+  background-color: #6c757d;
+}
+
+/* Message animations */
+.card {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .max-w-p80 {
+    max-width: 95%;
+  }
+  
+  .chat-item {
+    padding: 15px !important;
+  }
+  
+  .box-header .media {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .box-header .list-inline {
+    margin-top: 10px;
+  }
+}

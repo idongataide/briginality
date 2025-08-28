@@ -1,86 +1,37 @@
-import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Tabs, Avatar, Button } from 'antd';
+import { Tabs, Avatar, Button, Spin } from 'antd';
 import { UserOutlined, MailOutlined, GlobalOutlined, TeamOutlined, BookOutlined, HeartOutlined } from '@ant-design/icons';
-
-// Mock data - in real app, this would come from API
-const mockStudentData = {
-  id: '1',
-  fullName: 'Oscar Adetona',
-  age: 15,
-  guardianEmail: 'oscar.guardian@email.com',
-  pronouns: 'He/Him',
-  country: 'Nigeria',
-  homeschoolStatus: 'homeschooled',
-  region: 'afro-euro',
-  dateJoined: 'Thur, 14/08/24 2:30pm',
-  clubs: ['code_for_change', 'poetry_prose', 'mun', 'entrepreneurship_innovation'],
-  experience: '3 years',
-  expectations: 'I hope to gain new friends and learn coding skills while socializing with like-minded peers.',
-  accessibilityNeeds: 'No',
-  participationNeeds: 'No',
-  avatar: null
-};
-
-// Club mapping for display
-const clubLabels: { [key: string]: string } = {
-  'code_for_change': 'Code for Change',
-  'women_in_stem': 'Women in STEM Circle',
-  'space_astronomy': 'Space & Astronomy Club',
-  'health_bioethics': 'Health & Bioethics Circle',
-  'crochet_fiber_arts': 'Crochet & Fiber Arts Club',
-  'poetry_prose': 'Poetry & Prose Circle',
-  'visual_art_illustration': 'Visual Art & Illustration Club',
-  'music_production': 'Music Production & Performance Club',
-  'culinary_cultures': 'Culinary Cultures Club',
-  'language_exchange': 'Language Exchange & Linguistics Club',
-  'story_circles': 'Story Circles',
-  'mun': 'Model United Nations (MUN)',
-  'debate_public_speaking': 'Debate & Public Speaking Club',
-  'journalism_oped': 'Journalism & Op-Ed Writing Club',
-  'human_rights_advocacy': 'Human Rights & Advocacy Club',
-  'entrepreneurship_innovation': 'Entrepreneurship & Innovation Club',
-  'finance_investing': 'Finance & Investing for Teens',
-  'study_skills_productivity': 'Study Skills & Productivity Circle'
-};
-
-const clubCategories: { [key: string]: string } = {
-  'code_for_change': 'STEM-Focused',
-  'women_in_stem': 'STEM-Focused',
-  'space_astronomy': 'STEM-Focused',
-  'health_bioethics': 'STEM-Focused',
-  'crochet_fiber_arts': 'Creative & Cultural',
-  'poetry_prose': 'Creative & Cultural',
-  'visual_art_illustration': 'Creative & Cultural',
-  'music_production': 'Creative & Cultural',
-  'culinary_cultures': 'Creative & Cultural',
-  'language_exchange': 'Creative & Cultural',
-  'story_circles': 'Civic & Intellectual',
-  'mun': 'Civic & Intellectual',
-  'debate_public_speaking': 'Civic & Intellectual',
-  'journalism_oped': 'Civic & Intellectual',
-  'human_rights_advocacy': 'Civic & Intellectual',
-  'entrepreneurship_innovation': 'Innovation & Life Skills',
-  'finance_investing': 'Innovation & Life Skills',
-  'study_skills_productivity': 'Innovation & Life Skills'
-};
+import { useApplicantDetails } from '@/hooks/useAdmin';
 
 const StudentDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [student, setStudent] = useState(mockStudentData);
-  const [loading, setLoading] = useState(false);
-  console.log(loading);
+  const { data: applicantData, isLoading } = useApplicantDetails(id as string);
 
-  useEffect(() => {
-    // In real app, fetch student data by ID
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setStudent(mockStudentData);
-      setLoading(false);
-    }, 500);
-  }, [id]);
+  const student = {
+    fullName: applicantData?.name ?? '',
+    age: parseInt(applicantData?.age ?? '0', 10) || 0,
+    guardianEmail: applicantData?.parent_email ?? '',
+    pronouns: applicantData?.pronouns ?? '',
+    country: applicantData?.country_timezone ?? '',
+    homeschoolStatus: applicantData?.homeschool_status ?? '',
+    regionName: applicantData?.region_name ?? '',
+    dateJoined: applicantData?.submitted_at ?? '',
+    clubs: applicantData?.club_preference_names ?? [],
+    experience: Array.isArray(applicantData?.experience)
+      ? (applicantData?.experience as string[]).join(' • ')
+      : (applicantData?.experience as string) ?? '',
+    experienceOnly: applicantData?.experience[0],
+    notes: applicantData?.notes ?? '',
+    accessibilityNeeds:
+      Array.isArray(applicantData?.accessibility) && applicantData?.accessibility[0]
+        ? (applicantData?.accessibility[0].toLowerCase().includes('no') ? 'No' : 'Yes')
+        : 'No',
+    participationNeeds:
+      Array.isArray(applicantData?.accessibility) && applicantData?.accessibility[1]
+        ? (applicantData?.accessibility[1].toLowerCase().includes('no') ? 'No' : 'Yes')
+        : 'No',
+  };
 
   const items = [
     {
@@ -130,9 +81,7 @@ const StudentDetails = () => {
               <div className="info-item col-span-2">
                 <div className="info-label text-md font-medium text-[#171717]">Region</div>
                 <div className="info-value">
-                  {student.region === 'afro-euro' ? 'AfroEuro – Africa + Europe' :
-                   student.region === 'amerisphere' ? 'AmeriSphere – North, Central & South America' :
-                   'AsiaLume – Asia + Australia/Oceania'}
+                  {student.regionName}
                 </div>
               </div>
               <div className="info-item col-span-2">
@@ -151,15 +100,12 @@ const StudentDetails = () => {
         <div className="card shadow-sm mb-0!">
           <div className="card-body">
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {student.clubs.map((club, index) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                {student.clubs.map((clubName: string, index: number) => (
                   <div key={index} className="border rounded p-3 border-l-4 border-[#3898CB]">
                     <div className="space-y-2">
-                      <span className="inline-block px-2 py-1 text-xs font-medium rounded text-[#fff] bg-[#3898CB]">
-                        {clubCategories[club]}
-                      </span>
                       <div className="font-medium text-sm">
-                        {clubLabels[club]}
+                        {clubName}
                       </div>
                     </div>
                   </div>
@@ -169,10 +115,7 @@ const StudentDetails = () => {
               <div>
                 <h4 className="font-medium mb-2">Club Selection Summary</h4>
                 <div className="text-sm text-gray-600">
-                  Student has selected {student.clubs.length} clubs across different categories, 
-                  showing interest in {Object.keys(clubCategories).filter(cat => 
-                    student.clubs.some(club => clubCategories[club] === cat)
-                  ).length} different areas.
+                  Student has selected {student.clubs.length} clubs.
                 </div>
               </div>
             </div>
@@ -188,20 +131,20 @@ const StudentDetails = () => {
           <div className="card-body">
             <div className="space-y-4">
               <div className="info-item">
-                <div className="info-label text-md font-medium text-[#171717]">Homeschooling Experience</div>
+                <div className="info-label text-md font-medium text-[#171717]">Experience</div>
                 <div className="info-value">
                   <BookOutlined className="mr-2" />
                   {student.experience}
                 </div>
               </div>
               <div className="info-item">
-                <div className="info-label text-md font-medium text-[#171717]">Joining Expectations</div>
+                <div className="info-label text-md font-medium text-[#171717]">Notes</div>
                 <div className="max-w-2xl">
                   <div className="bg-gray-50 p-4 rounded-lg">
                     <div className="flex items-start space-x-2">
                       <HeartOutlined className="text-red-500 mt-1" />
                       <div className="text-sm text-gray-700">
-                        {student.expectations}
+                        {student.notes || 'No additional notes provided.'}
                       </div>
                     </div>
                   </div>
@@ -310,11 +253,15 @@ const StudentDetails = () => {
                   <h3 className="box-title">Student Information</h3>
                 </div>
                 <div className="box-body">
-                  <Tabs 
-                    defaultActiveKey="1" 
-                    items={items}
-                    className="student-details-tabs"
-                  />
+                  {isLoading ? (
+                    <div className="py-10 text-center"><Spin /></div>
+                  ) : (
+                    <Tabs 
+                      defaultActiveKey="1" 
+                      items={items}
+                      className="student-details-tabs"
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -343,14 +290,13 @@ const StudentDetails = () => {
                   <Avatar 
                     size={80} 
                     icon={<UserOutlined />} 
-                    src={student.avatar}
                     className="border-4 border-white"
                   />
                 </div>
 
                 {/* Footer Stats */}
                 <div className="box-footer">
-                  <div className="row">
+                  <div className="row mt-2">
                     <div className="col-sm-4">
                       <div className="description-block">
                         <h5 className="description-header">{student.clubs.length}</h5>
@@ -359,14 +305,16 @@ const StudentDetails = () => {
                     </div>
                     <div className="col-sm-4 be-1 bs-1">
                       <div className="description-block">
-                        <h5 className="description-header">{student.experience}</h5>
+                        <h5 className="description-header">{student.experienceOnly}</h5>
                         <span className="description-text">EXPERIENCE</span>
                       </div>
                     </div>
                     <div className="col-sm-4">
                       <div className="description-block">
                         <h5 className="description-header">
-                          {student.region.split('-')[0].toUpperCase()}
+                        {student.regionName?.length > 10 
+                          ? student.regionName.slice(0, 8) 
+                          : student.regionName}
                         </h5>
                         <span className="description-text">REGION</span>
                       </div>
