@@ -6,7 +6,6 @@ import {
   createNotice, 
   updateNotice, 
   deleteNotice,
-  type Notice,
   type CreateNoticePayload,
   type UpdateNoticePayload
 } from '@/api/noticesApi';
