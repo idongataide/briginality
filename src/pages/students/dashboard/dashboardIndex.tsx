@@ -1,72 +1,15 @@
 import { useOnboardingStore } from "@/global/store";
-import React, { useEffect} from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Calendar, Badge, List } from 'antd';
-import { FaArrowRight } from "react-icons/fa";
 import { useNotices } from "@/hooks/useNotices";
 import { useEvents } from "@/hooks/useEvents";
 import dayjs from 'dayjs';
+import { useMyClubs } from "@/hooks/useMyClubs";
+import Images from "@/components/images";
+import ClubDetailsModal from '../../../components/ClubDetailsModal';
+import { MyClub } from '../../../interfaces/interface.d';
 
-// Mock student data - in real app, this would come from API
-const mockStudentData = {
-  fullName: 'Oscar Adetona',
-  age: 15,
-  guardianEmail: 'oscar.guardian@email.com',
-  pronouns: 'He/Him',
-  country: 'Nigeria',
-  homeschoolStatus: 'homeschooled',
-  region: 'afro-euro',
-  dateJoined: 'Thur, 14/08/24 2:30pm',
-  clubs: ['code_for_change', 'poetry_prose', 'mun', 'entrepreneurship_innovation'],
-  experience: '3 years',
-  expectations: 'I hope to gain new friends and learn coding skills while socializing with like-minded peers.',
-  accessibilityNeeds: 'No',
-  participationNeeds: 'No',
-  avatar: null
-};
-
-// Club mapping for display
-const clubLabels: { [key: string]: string } = {
-  'code_for_change': 'Code for Change',
-  'women_in_stem': 'Women in STEM Circle',
-  'space_astronomy': 'Space & Astronomy Club',
-  'health_bioethics': 'Health & Bioethics Circle',
-  'crochet_fiber_arts': 'Crochet & Fiber Arts Club',
-  'poetry_prose': 'Poetry & Prose Circle',
-  'visual_art_illustration': 'Visual Art & Illustration Club',
-  'music_production': 'Music Production & Performance Club',
-  'culinary_cultures': 'Culinary Cultures Club',
-  'language_exchange': 'Language Exchange & Linguistics Club',
-  'story_circles': 'Story Circles',
-  'mun': 'Model United Nations (MUN)',
-  'debate_public_speaking': 'Debate & Public Speaking Club',
-  'journalism_oped': 'Journalism & Op-Ed Writing Club',
-  'human_rights_advocacy': 'Human Rights & Advocacy Club',
-  'entrepreneurship_innovation': 'Entrepreneurship & Innovation Club',
-  'finance_investing': 'Finance & Investing for Teens',
-  'study_skills_productivity': 'Study Skills & Productivity Circle'
-};
-
-const clubCategories: { [key: string]: string } = {
-  'code_for_change': 'STEM-Focused',
-  'women_in_stem': 'STEM-Focused',
-  'space_astronomy': 'STEM-Focused',
-  'health_bioethics': 'STEM-Focused',
-  'crochet_fiber_arts': 'Creative & Cultural',
-  'poetry_prose': 'Creative & Cultural',
-  'visual_art_illustration': 'Creative & Cultural',
-  'music_production': 'Creative & Cultural',
-  'culinary_cultures': 'Creative & Cultural',
-  'language_exchange': 'Creative & Cultural',
-  'story_circles': 'Civic & Intellectual',
-  'mun': 'Civic & Intellectual',
-  'debate_public_speaking': 'Civic & Intellectual',
-  'journalism_oped': 'Civic & Intellectual',
-  'human_rights_advocacy': 'Civic & Intellectual',
-  'entrepreneurship_innovation': 'Innovation & Life Skills',
-  'finance_investing': 'Innovation & Life Skills',
-  'study_skills_productivity': 'Innovation & Life Skills'
-};
 
 // Notice board data will come from API
 
@@ -77,6 +20,21 @@ const DashboardIndex: React.FC = () => {
   const { data: notices, isLoading: noticesLoading } = useNotices();
   const { data: events, isLoading: eventsLoading } = useEvents();
   const [selectedDate, setSelectedDate] = React.useState<Date>(new Date());
+  const { data: myClubs } = useMyClubs();
+
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedClub, setSelectedClub] = useState<MyClub | null>(null);
+
+  const openModal = (club: MyClub) => {
+    setSelectedClub(club);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedClub(null);
+  };
+
   console.log(selectedDate);
 
   useEffect(() => {
@@ -144,7 +102,7 @@ const DashboardIndex: React.FC = () => {
                           Welcome back, <strong>{(firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userName || "there")}!</strong>
                         </h2>
                         <p className="text-white my-10 fs-16">
-                          You have <strong className="text-white">{mockStudentData.clubs.length} clubs</strong> and{" "}
+                          You have <strong className="text-white">{myClubs.length} clubs</strong> and{" "}
                           <strong className="text-white">{getUpcomingEvents().length} upcoming events</strong>.
                         </p>
                         <p className="text-dark my-10 fs-16">
@@ -208,71 +166,91 @@ const DashboardIndex: React.FC = () => {
               </div>
             </div>
 
-            {/* My Clubs */}
+           
             <div className="col-xl-4 col-12">
-              <div className="box bg-transparent no-shadow mb-30">
-                <div className="box-header no-border pb-0">
-                  <h4 className="box-title">My Clubs</h4>
-                  <ul className="box-controls pull-right d-md-flex d-none">
-                    <li>
-                      <button className="btn btn-primary-light px-10">
-                        View All
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              {mockStudentData.clubs.map((club, index) => {
-                // Generate initials from club name - just first 2 letters
-                const clubInitials = clubLabels[club].split(' ').map(word => word.charAt(0)).join('').substring(0, 2);
-                const bgColors = [
-                  '#e3f2fd', // light blue
-                  '#f3e5f5', // light purple
-                  '#e8f5e8', // light green
-                  '#fff3e0', // light orange
-                  '#fce4ec', // light pink
-                  '#f1f8e9', // light lime
-                  '#e0f2f1', // light teal
-                  '#fafafa'  // light gray
-                ];
-                
-                const bgColor = bgColors[index % bgColors.length];
-                
-                return (
-                  <div key={index} className="box mb-15 pull-up">
-                    <div className="box-body">
-                      <div className="d-flex align-items-center justify-content-between">
-                        <div className="d-flex align-items-center">
-                          <div 
-                            className="me-15 h-50 w-50 l-h-60 rounded text-center d-flex align-items-center justify-content-center"
-                            style={{
-                              background: bgColor,
-                              color: '#333',
-                              fontSize: '16px',
-                              fontWeight: 'bold'
-                            }}
-                          >
-                            {clubInitials}
-                          </div>
-                          <div className="d-flex flex-column fw-500">
-                            <a
-                              href="#"
-                              className="text-dark hover-primary mb-1 fs-16"
-                            >
-                              {clubLabels[club]}
-                            </a>
-                            <span className="text-fade">{clubCategories[club]}</span>
-                          </div>
-                        </div>
-                        <a href="#">
-                          <FaArrowRight className="fs-16" /> 
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+               <div className="box bg-transparent no-shadow mb-30">
+                 <div className="box-header no-border pb-0">
+                   <h4 className="box-title">My Clubs</h4>
+                   <ul className="box-controls pull-right d-md-flex d-none">
+                     <li>
+                       <button className="btn btn-primary-light px-10">
+                         View All
+                       </button>
+                     </li>
+                   </ul>
+                 </div>
+               </div>
+               {myClubs && myClubs?.length > 0 ? (
+                 myClubs.map((club: MyClub, index: number) => {
+                   // Generate initials from club name - just first 2 letters
+                   const clubInitials = club?.name?.split(' ').map((word: string) => word.charAt(0)).join('').substring(0, 1);
+                   const bgColors = [
+                     '#e3f2fd', // light blue
+                     '#f3e5f5', // light purple
+                     '#e8f5e8', // light green
+                     '#fff3e0', // light orange
+                     '#fce4ec', // light pink
+                     '#f1f8e9', // light lime
+                     '#e0f2f1', // light teal
+                     '#fafafa'  // light gray
+                   ];
+                   
+                   const bgColor = bgColors[index % bgColors.length];
+                   
+                   return (
+                     <div key={club.id} className="box mb-15 pull-up">
+                       <div className="box-body">
+                         <div className="d-flex align-items-center justify-content-between">
+                           <div className="d-flex align-items-center">
+                             <div 
+                               className="me-15 h-50 w-30! l-h-60 rounded text-center d-flex align-items-center justify-content-center"
+                               style={{
+                                 background: bgColor,
+                                 color: '#333',
+                                 fontSize: '16px',
+                                 fontWeight: 'bold'
+                               }}
+                             >
+                               {clubInitials}
+                             </div>
+                             <div className="d-flex flex-column fw-500">
+                               <a
+                                 href="#"
+                                 className="text-dark  hover-primary mb-1 fs-xs"
+                               >
+                                 {club.name}
+                               </a>
+                               <span className="text-fade text-[10px]">{club.members} Members</span>
+                             </div>
+                           </div>
+                           <button
+                             className="btn btn-primary-light px-10"
+                             onClick={() => openModal(club)}
+                           >
+                             Details
+                           </button>
+                         </div>
+                       </div>
+                     </div>
+                   );
+                 })
+               ) : (
+                 <div className="text-center py-8">
+                   <div className="flex items-center justify-center">
+                     <img className="w-[100%] mb-10" src={Images.empty} alt="empty" />
+                   </div>                    
+                   <p className="text-[#7D8489] text-xl">No clubs assigned yet</p>
+                 </div>
+               )}
+             </div>
+
+            {selectedClub && (
+              <ClubDetailsModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                club={selectedClub}
+              />
+            )}
 
             {/* Calendar */}
             <div className="col-xl-4 col-12">

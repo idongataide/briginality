@@ -134,7 +134,7 @@ const DashboardIndex: React.FC = () => {
                     ) : (
                       <div className="text-center mt-[100px] p-20 text-fade">
                         <div className="flex items-center justify-center">
-                            <img className="w-[100%] mb-10" src={Images.empty} alt="empty" />
+                            <img className="w-[30%] mb-10" src={Images.empty} alt="empty" />
                           </div>                    
                           <p className="text-[#7D8489] text-xl">Notices will appear here <br/>once you have any</p>
                       </div>
