@@ -3,6 +3,7 @@ import { Calendar, Badge, Tabs, Card, Tag, Button, Spin } from 'antd';
 import { FaClock, FaMapMarkerAlt, FaVideo } from 'react-icons/fa';
 import { useRegions } from '@/hooks/useEnums';
 import { useEventsByRegion } from '@/hooks/useEvents';
+import { useProfile } from '@/hooks/useProfile';
 
 const { TabPane } = Tabs;
 
@@ -11,6 +12,7 @@ const CalendarPage: React.FC = () => {
   const [activeRegion, setActiveRegion] = useState<string>('');
   
   const { data: regions, isLoading: regionsLoading } = useRegions();
+  const { profile } = useProfile();
   const { data: events, isLoading: eventsLoading } = useEventsByRegion(activeRegion);
 
   console.log(selectedDate)
@@ -21,6 +23,13 @@ const CalendarPage: React.FC = () => {
       setActiveRegion(regions[0].id?.toString() || '');
     }
   }, [regions, activeRegion]);
+
+  // Function to get region ID by name
+  const getRegionIdByName = (regionName: string) => {
+    if (!regions?.data || !regionName) return null;
+    const region = regions.data.find((r: { name: string; id: string | number }) => r.name === regionName);
+    return region ? region.id : null;
+  };
 
   const getListData = (value: any) => {
     if (!events) return [];
@@ -50,6 +59,12 @@ const CalendarPage: React.FC = () => {
   };
 
   const renderEventCard = (event: any) => {
+    const eventRegionId = getRegionIdByName(event.region);
+    const userRegionId = profile?.user_details?.region_id;
+    const showJoinButton = eventRegionId && userRegionId && eventRegionId == userRegionId;
+
+    console.log(eventRegionId,userRegionId,'eventRegionIds')
+    
     return (
       <Card 
         key={event.id} 
@@ -77,8 +92,7 @@ const CalendarPage: React.FC = () => {
               </div>
             </div>
           </div>
-          
-          {event.meetingLink && (
+          {showJoinButton && event.meetingLink && (
             <Button 
               type="primary" 
               icon={<FaVideo />}

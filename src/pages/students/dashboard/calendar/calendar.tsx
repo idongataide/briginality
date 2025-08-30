@@ -15,6 +15,8 @@ const CalendarPage: React.FC = () => {
   const { profile } = useProfile();
   const { data: events, isLoading: eventsLoading } = useEventsByRegion(activeRegion);
 
+  console.log(selectedDate)
+
   // Set first region as active when regions load
   React.useEffect(() => {
     if (regions && regions.length > 0 && !activeRegion) {
