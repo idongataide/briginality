@@ -81,20 +81,20 @@ const DashboardIndex: React.FC = () => {
         <section className="content">
           <div className="row">
             {/* Welcome Section */}
-            <div className="col-xl-12 col-12">
              <div className="box" style={{background: "linear-gradient(135deg, #f9607f 0%, #ff7e5f 100%)"}}>
-               <div className="box-body p-xl-0">
-                  <div className="row align-items-center">
-                    <div className="col-12 col-lg-4">
-                      <img className="w-full pt-20" src="../images/svg-icon/color-svg/custom-14.svg"
-                        alt=""
-                      />
-                    </div>
-                    <div className="col-12 col-lg-8">
-                      <h2 className="font-bold! text-white!">Welcome back {(firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userName || "there")}!</h2>
+            <div className="col-xl-10 mx-auto">
+               <div className="box-body pb-0">
+                  <div className="row align-items-center flex-column flex-lg-row d-flex">
+                    <div className="col-12 col-lg-8 order-1">
+                      <h2 className="font-bold! text-white! leading-tight">Welcome back {(firstName || lastName) ? `${firstName} ${lastName}`.trim() : (userName || "there")}!</h2>
                       <p className="text-white mb-0 fs-16 pe-10">
                         it’s always a pleasure to see you again. 
                       </p>
+                    </div>
+                    <div className="col-12 col-lg-4 order-2">
+                      <img className="w-full pt-20" src="../images/svg-icon/color-svg/custom-14.svg"
+                        alt=""
+                      />
                     </div>
                   </div>
                 </div>
@@ -266,31 +266,32 @@ const DashboardIndex: React.FC = () => {
                       dataSource={getUpcomingEvents()}
                       renderItem={(event) => (
                         <List.Item>
-                          <div className="d-flex align-items-center justify-content-between w-full">
-                            <div className="flex mb-2">
-                              <div>
-                                <h5 className="font-semibold! mb-1">{event.title}</h5>
-                                <p className="mb-1">{event.club}</p>                            
-                                <p className="text-md">{event.description}</p>
-                              </div>
+                          <div
+                            className="d-flex align-items-center justify-content-between w-full flex-wrap md:flex-nowrap gap-2 md:gap-0"
+                            style={{ flexDirection: 'row' }}
+                          >
+                            <div className="flex-1 min-w-0 mb-2 md:mb-0">
+                              <h5 className="font-semibold! mb-1 truncate">{event.title}</h5>
+                              <p className="mb-1 truncate">{event.club}</p>
+                              <p className="text-md truncate">{event.description}</p>
                             </div>
-                            <div className="flex justify-between items-left">
-                                <p className="text-md">
-                                  {dayjs(event.date).format('MMMM D, YYYY')} • {event.time}
-                                </p>
+                            <div className="flex-1 min-w-0 flex md:block flex-col md:flex-row justify-between items-left mb-2 md:mb-0">
+                              <p className="text-md truncate">
+                                {dayjs(event.date).format('MMMM D, YYYY')} • {event.time}
+                              </p>
                             </div>
-                            
-                            <div className="flex flex-column">
-                                                              <Button 
-                                type="primary" 
+                            <div className="flex flex-col items-end w-full md:w-auto">
+                              <Button
+                                type="primary"
                                 size="small"
+                                className="w-full md:w-auto"
                                 onClick={() => event.meetingLink && window.open(event.meetingLink, '_blank')}
                                 disabled={!event.meetingLink}
                               >
                                 Join Meeting
                               </Button>
-                              </div>
                             </div>
+                          </div>
                         </List.Item>
                       )}
                     />

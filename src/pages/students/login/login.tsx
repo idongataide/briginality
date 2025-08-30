@@ -35,6 +35,7 @@ const Login = () => {
           localStorage.clear();
           useLeadershipStore.persist.clearStorage();
           useOnboardingStore.persist.clearStorage(); 
+          navPath.setNavPath("");
           toast.success('Login Successful');
           setNavData(navPath, values.email, res);
           try {
@@ -69,7 +70,7 @@ const Login = () => {
             <h2 className="text-[#1C2023] flex items-center">  <FaAngleLeft 
                     onClick={() => {
                     navigate(-1);
-                  }} className="me-1 cursor-pointer" /> Login as a Leader </h2>
+                  }} className="me-1 cursor-pointer" /> Login as a Student </h2>
                 <p className="mb-0 text-lg">Sign in to continue.</p>
               </div>
               <div className="">
@@ -124,7 +125,7 @@ const Login = () => {
                         navPath.setNavPath("basic-info");
                     }}>
                     Don't have an account?{" "}
-                    <Link to="/signup" className="text-[#F9607F]">
+                    <Link to="/student/signup" className="text-[#F9607F]">
                       Sign Up
                     </Link>
                   </p>

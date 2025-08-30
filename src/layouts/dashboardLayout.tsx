@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { FaHome, FaLock, FaSignOutAlt, FaUserGraduate, FaUserTie, FaList, FaCoins, FaUser, FaCog, FaUsers, FaCalendar } from "react-icons/fa";
@@ -15,6 +15,11 @@ const DashboardLayout: React.FC = () => {
   const { userName: leadershipUserName } = useLeadershipStore();
   const navigate = useNavigate();
   const [showLogoutModal, setShowLogoutModal] = React.useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -26,6 +31,7 @@ const DashboardLayout: React.FC = () => {
     useLeadershipStore.persist.clearStorage();
     navigate("/onboarding", { replace: true });
     setShowLogoutModal(false);
+    window.location.reload();
   };
 
   const handleCancelLogout = () => {
@@ -90,7 +96,7 @@ const DashboardLayout: React.FC = () => {
             {/* logo*/}
             <div className="logo-lg">
               <span className="light-logo">
-                <img src={Images.logo} className='w-[180px]' alt="logo" />
+                  <img src={Images.logo} className="w-[180px] mt-[30px] sm:mt-[0px]" alt="logo" />
               </span>              
             </div>
           </Link>
@@ -98,9 +104,12 @@ const DashboardLayout: React.FC = () => {
         {/* Header Navbar */}
         <nav className="navbar navbar-static-top">
           {/* Sidebar toggle button*/}
-          <div className="">
-            <div className="text-[#fff] text-2xl font-semibold">
-               {greeting}
+          <div className="sidebar-toggle" onClick={toggleSidebar}>
+            <i  className="ti-menu d-block d-md-none text-white"></i>
+          </div>
+          <div className='flex position-absolute'>
+            <div className="text-[#fff] text-2xl font-semibold d-none d-lg-flex">
+              {greeting}
             </div>
           </div>
           <div className="navbar-custom-menu r-side">
@@ -185,69 +194,84 @@ const DashboardLayout: React.FC = () => {
           </div>
         </nav>
       </header>
-      <aside className="main-sidebar border-r border-gray-200 fixed bg-[#f24848]">
-        {/* sidebar*/}
-        <section className="sidebar position-relative">
-          <div className="multinav">
-            <div className="multinav-scroll" style={{ height: "100%" }}>
-              {/* sidebar menu*/}
-              <ul className="sidebar-menu" data-widget="tree">
-                {navData.map((item, index) => (
-                  <li className="treeview" key={item.id}>
-                    <NavLink
-                      to={`${basePath}/${item.URL}`}
-                      children={({ isActive }) => (
-                        <div
-                          className={`
-                            ${index === 0 && handleStart ? "text-[#F9607F] bg-[#f6e8eb]" : ""}
-                            flex items-center font-[400] transition-all duration-300 py-3 px-2 my-0 overflow-hidden capitalize 
-                            ${siderBarView ? `${handleStart && "px-2 mx-2 rounded-xl transition-all duration-500"}` : "rounded-full w-10 h-10 flex justify-center items-center pl-2"}
-                            ${
-                              isActive
-                                ? "text-[#F9607F] bg-[#f6e8eb]  rounded-xl"
-                                : "hover:bg-[#eef2ff] text-[#fff] hover:text-[#7D8489]"
-                            }
-                          `}
-                        >
-                          <span className="mr-3 text-xl">{item.icon}</span>
-                          {siderBarView  && <span className='text-lg'>{item.name}</span>}
-                        </div>
-                      )}
-                    />
-                  </li>
-                ))}
-              </ul>
+      <aside
+        className="main-sidebar border-r border-gray-200 !fixed bg-[#f24848]"
+        style={{
+          top: 0,
+          left: 0,
+          height: '80vh',
+          width: '260px',
+          zIndex: 50,
+          // On large screens, always show sidebar. On small screens, slide in/out.
+          transform: typeof window !== 'undefined' && window.innerWidth < 768
+            ? (isSidebarOpen ? 'translateX(0)' : 'translateX(-270px)')
+            : 'translateX(0)',
+          transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      >
+          {/* sidebar*/}
+          <section className="sidebar position-relative">
+            <div className="multinav">
+              <div className="multinav-scroll" style={{ height: "100%" }}>
+                {/* sidebar menu*/}
+                <ul className="sidebar-menu" data-widget="tree">
+                  {navData.map((item, index) => (
+                    <li className="treeview" key={item.id}>
+                      <NavLink
+                        to={`${basePath}/${item.URL}`}
+                        onClick={() => setIsSidebarOpen(false)}
+                        children={({ isActive }) => (
+                          <div
+                            className={`
+                              ${index === 0 && handleStart ? "text-[#F9607F] bg-[#f6e8eb]" : ""}
+                              flex items-center font-[400] transition-all duration-300 py-3 px-2 my-0 overflow-hidden capitalize 
+                              ${siderBarView ? `${handleStart && "px-2 mx-2 rounded-xl transition-all duration-500"}` : "rounded-full w-10 h-10 flex justify-center items-center pl-2"}
+                              ${
+                                isActive
+                                  ? "text-[#F9607F] bg-[#f6e8eb]  rounded-xl"
+                                  : "hover:bg-[#eef2ff] text-[#fff] hover:text-[#7D8489]"
+                              }
+                            `}
+                          >
+                            <span className="mr-3 text-xl">{item.icon}</span>
+                            {siderBarView  && <span className='text-lg'>{item.name}</span>}
+                          </div>
+                        )}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
+          </section>
+          <div className="sidebar-footer">
+            <Link
+              to="#"
+              className="link"
+              data-bs-toggle="tooltip"
+              title="Settings"
+            >
+              <FaCog />
+            </Link>
+            <Link
+              to="#"
+              className="link"
+              data-bs-toggle="tooltip"
+              title="Settings"
+            >
+              <FaLock />
+            </Link>
+            <Link
+              to="#"
+              className="link"
+              data-bs-toggle="tooltip"
+              title="Logout"
+              onClick={handleLogout}
+            >
+              <FaSignOutAlt />
+            </Link>
           </div>
-        </section>
-        <div className="sidebar-footer">
-          <Link
-            to="#"
-            className="link"
-            data-bs-toggle="tooltip"
-            title="Settings"
-          >
-            <FaCog />
-          </Link>
-          <Link
-            to="#"
-            className="link"
-            data-bs-toggle="tooltip"
-            title="Settings"
-          >
-            <FaLock />
-          </Link>
-          <Link
-            to="#"
-            className="link"
-            data-bs-toggle="tooltip"
-            title="Logout"
-            onClick={handleLogout}
-          >
-            <FaSignOutAlt />
-          </Link>
-        </div>
-      </aside>
+        </aside>
       <Modal
         title="Confirm Logout"
         open={showLogoutModal}

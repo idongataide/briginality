@@ -1,40 +1,62 @@
 import { RouteObject } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import OnboardingLayout from "../layouts/OnboardingLayout";
-import LeadershipLogin from "@/pages/leadership/login/login";
-import LeadershipAuthPath from "@/pages/leadership/authPath";
-import { Suspense } from "react";
-import DashboardIndex from "@/pages/leadership/dashboard/dashboardIndex";
 import LoadingScreen from "@/layouts/LoadingScreen";
 import MainRouter from "./mainRouter";
-import MeetingsPage from "@/pages/leadership/dashboard/meetings/meetings";
-import CalendarPage from "@/pages/leadership/dashboard/calendar/calendar";
-import ProfilePage from "@/pages/leadership/dashboard/profile/profile";
-import NoticesPage from "@/pages/leadership/dashboard/notices/notices";
-import GroupChat from "@/pages/leadership/dashboard/chat/chat";
+
+// Lazy load all leadership components
+const LeadershipLogin = lazy(() => import("@/pages/leadership/login/login"));
+const LeadershipAuthPath = lazy(() => import("@/pages/leadership/authPath"));
+const DashboardIndex = lazy(() => import("@/pages/leadership/dashboard/dashboardIndex"));
+const MeetingsPage = lazy(() => import("@/pages/leadership/dashboard/meetings/meetings"));
+const CalendarPage = lazy(() => import("@/pages/leadership/dashboard/calendar/calendar"));
+const ProfilePage = lazy(() => import("@/pages/leadership/dashboard/profile/profile"));
+const NoticesPage = lazy(() => import("@/pages/leadership/dashboard/notices/notices"));
+const GroupChat = lazy(() => import("@/pages/leadership/dashboard/chat/chat"));
 
 const leadershipRoutes: RouteObject[] = [
   {
     path: "/leadership/signup",
     element: <OnboardingLayout type="leadership" />,
     children: [
-      { index: true, element: <LeadershipAuthPath /> },
+      { 
+        index: true, 
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <LeadershipAuthPath />
+          </Suspense>
+        ) 
+      },
     ],
   },
   {
     path: "/leadership/login",
     element: <OnboardingLayout type="leadership" />,
     children: [
-      { index: true, element: <LeadershipLogin /> },
+      { 
+        index: true, 
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <LeadershipLogin />
+          </Suspense>
+        ) 
+      },
     ],
   },
   {
     path: "/leadership",
     element: <OnboardingLayout type="leadership"/>,
     children: [
-      { index: true, element: <LeadershipLogin /> },
+      { 
+        index: true, 
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <LeadershipLogin />
+          </Suspense>
+        ) 
+      },
     ],
   },
-
   {
     path: "/",
     element: <MainRouter />,
@@ -42,12 +64,12 @@ const leadershipRoutes: RouteObject[] = [
       {
         index: true,
         element: (
-            <Suspense fallback={<LoadingScreen />}>
-              <DashboardIndex />
-            </Suspense>
+          <Suspense fallback={<LoadingScreen />}>
+            <DashboardIndex />
+          </Suspense>
         ),
-       },
-       {
+      },
+      {
         path: "/leadership/dashboard",
         element: (
           <Suspense fallback={<LoadingScreen />}>
@@ -101,7 +123,6 @@ const leadershipRoutes: RouteObject[] = [
       },
     ],
   },
-  
 ];
 
-export default leadershipRoutes; 
+export default leadershipRoutes;

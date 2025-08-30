@@ -35,6 +35,7 @@ const LeadershipLogin = () => {
         localStorage.clear();
         useLeadershipStore.persist.clearStorage();
         useOnboardingStore.persist.clearStorage(); 
+        navPath.setNavPath("");
 
         if (res.status === ResponseValue.SUCCESS) {
           toast.success('Login Successful');
@@ -77,7 +78,7 @@ const LeadershipLogin = () => {
               <h2 className="text-[#1C2023] flex items-center">  <FaAngleLeft 
                     onClick={() => {
                     navigate(-1);
-                  }} className="me-1 cursor-pointer" /> Login as a Student </h2>
+                  }} className="me-1 cursor-pointer" /> Login as a leader </h2>
               {/* <p className="mb-0 text-lg">Sign in to continue as leader.</p> */}
             </div>
             <div className="">

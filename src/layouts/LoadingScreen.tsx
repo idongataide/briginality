@@ -21,14 +21,14 @@ const LoadingScreen: React.FC = () => {
           size={20}
           className="absolute top-12 animate-spin"
         />
-        <img className=" h-[28px] mt-2 animate-pulse" src={Images.logodark} />
+        <img className=" h-[28px] mt-2 animate-pulse" src={Images.logo2} />
       </div>
 
       <div className="w-full flex-col flex items-center mt-3">
         {" "}
         <p className="mt-8">Loading...</p>
         <Link to="/" className="cursor-pointer">
-          <Button className={`bg-blue-500 text-white mt-2 cursor-pointer`}>
+          <Button className={`!bg-primary text-white mt-2 cursor-pointer`}>
             Please wait
           </Button>
         </Link>

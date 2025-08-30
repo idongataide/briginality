@@ -1,29 +1,58 @@
 import React from 'react';
-import { Card, Avatar, Tag, Spin, Row, Col, Tabs, Typography, Space, Empty, Descriptions, Badge } from 'antd';
+import { Card, Avatar, Tag, Row, Col, Tabs, Typography, Space, Empty, Descriptions, Badge, Form, Input, Button } from 'antd';
 import { FaUser, FaEnvelope, FaMapMarkerAlt, FaClock, FaGraduationCap } from 'react-icons/fa';
 import { useProfile } from '@/hooks/useProfile';
+import { changePassword } from '@/api/changePasswordApi';
+import toast from 'react-hot-toast';
+import { ResponseValue } from '@/interfaces/enums';
+import DashboadLoadingScreen from '../dashboardScreen';
 
 const { Title, Text, Paragraph } = Typography;
 const { TabPane } = Tabs;
 
 const ProfilePage: React.FC = () => {
-  const { profile, isLoading, error } = useProfile();
+  const { profile, error } = useProfile();
+  const [form] = Form.useForm();
+  const [loading, setLoading] = React.useState(false);
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Spin size="large" tip="Loading profile..." />
-      </div>
-    );
-  }
+  const onFinish = (values: any) => {
+    setLoading(true);
+    const data = {
+      current_password: values.current_password,
+      password: values.password,
+      password_confirmation: values.password_confirmation,
+    };
+
+    changePassword(data)
+      .then((res) => { 
+        if (res.status === ResponseValue.SUCCESS) {
+          toast.success('Password updated successfully!');
+          form.resetFields();
+        } else {
+          const errorObj = res?.response?.data?.error_message;
+          if (errorObj && typeof errorObj === 'object') {
+            const allErrors = Object.values(errorObj)
+              .map((arr) => Array.isArray(arr) ? arr.join(' ') : arr)
+              .join(' ');
+            toast.error(allErrors || res?.message || 'An error occurred');
+          } else {
+            toast.error(res?.message || 'An error occurred');
+          }
+        }
+      })
+      .catch((error) => {
+        toast.error(error.message || "An unexpected error occurred");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+
 
   if (error || !profile) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <Card>
-          <Text type="danger">Failed to load profile. Please try again.</Text>
-        </Card>
-      </div>
+      <DashboadLoadingScreen/>
     );
   }
 
@@ -125,6 +154,52 @@ const ProfilePage: React.FC = () => {
               <Paragraph>{profile.user_details.bio}</Paragraph>
             </TabPane>
           )}
+          <TabPane tab="Update Password" key="5">
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={onFinish}
+              style={{ maxWidth: 400, margin: '0 auto', marginTop: 32 }}
+            >
+              <Form.Item
+                label="Current Password"
+                name="current_password"
+                rules={[{ required: true, message: 'Please input your current password!' }]}
+              >
+                <Input.Password placeholder="Enter current password" />
+              </Form.Item>
+              <Form.Item
+                label="New Password"
+                name="password"
+                rules={[{ required: true, message: 'Please input your new password!' }]}
+              >
+                <Input.Password placeholder="Enter new password" />
+              </Form.Item>
+              <Form.Item
+                label="Confirm New Password"
+                name="password_confirmation"
+                dependencies={["password"]}
+                rules={[
+                  { required: true, message: 'Please confirm your new password!' },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue('password') === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Passwords do not match!'));
+                    },
+                  }),
+                ]}
+              >
+                <Input.Password placeholder="Confirm new password" />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" className='!h-[43px]' htmlType="submit" loading={loading} block>
+                  Update Password
+                </Button>
+              </Form.Item>
+            </Form>
+          </TabPane>
         </Tabs>
       </Card>
     </div>

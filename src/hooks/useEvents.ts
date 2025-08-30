@@ -25,6 +25,7 @@ const normalizeApiData = (payload: GetEventsResponse | any): NormalizedEventItem
     title: item.name,
     description: item.description,
     date: item.start_date,
+    region: item.region,
     start_date: item.start_date,
     end_date: item.end_date || item.start_date, // fallback to start_date if end_date is not provided
     time: `${item.start_time} - ${item.end_time}`,

@@ -30,7 +30,7 @@ const studentRoutes: RouteObject[] = [
     ],
   },
   {
-    path: "/signup",
+    path: "student/signup",
     element: <OnboardingLayout />,
     children: [
       { index: true, element: <AuthPath /> },

@@ -215,3 +215,9 @@ input:-internal-autofill-selected {
 .custom-table .ant-table-thead > tr > th:last-child {
   border-top-right-radius: 8px !important;
 }
+
+.translate-x-0{
+  /* transform: translate(0); */
+  /* position: fixed; */
+  height: 70vh ;
+}

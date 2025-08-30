@@ -50,20 +50,22 @@ const MeetingsPage: React.FC = () => {
                 dataSource={upcomingEvents}
                 renderItem={(event) => (
                   <List.Item>
-                    <div className="d-flex align-items-center justify-content-between w-full">
-                      <div className="flex mb-2">
+                      <div
+                            className="d-flex align-items-center justify-content-between w-full flex-wrap md:flex-nowrap gap-2 md:gap-0"
+                            style={{ flexDirection: 'row' }}
+                          >                      <div className="flex mb-2">
                         <div>
                           <h5 className="font-semibold! mb-1">{event.title}</h5>
                           <p className="mb-1">{event.club}</p>
                           <p className="text-md">{event.description}</p>
                         </div>
                       </div>
-                      <div className="flex justify-between items-left">
+                      <div className="flex-1 min-w-0 flex md:block flex-col md:flex-row justify-between items-left mb-2 md:mb-0">
                         <p className="text-md">
                           {dayjs(event.date).format('MMMM D, YYYY')} • {event.time}
                         </p>
                       </div>
-                      <div className="flex flex-column">
+                      <div className="flex flex-col items-end w-full md:w-auto">
                         <Button 
                           type="primary" 
                           size="small"
