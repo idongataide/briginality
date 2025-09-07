@@ -45,22 +45,22 @@ const CaseStudy = () => {
               <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-blue-500">
                 <h4 className="font-semibold text-gray-800 mb-2">SCENARIO:</h4>
                 <p className="text-gray-700 leading-relaxed">
-                  DURING A CLUB MEETING, A STUDENT MAKES AN INSENSITIVE JOKE THAT ANOTHER MEMBER FINDS OFFENSIVE. 
-                  THE UPSET STUDENT MESSAGES YOU PRIVATELY AFTER THE MEETING, CLEARLY HURT.
-                </p>
+                    During a club meeting, a student makes an insensitive joke that another member finds offensive. 
+                    The upset student messages you privately after the meeting, clearly hurt.
+                  </p>
               </div>
             </div>
 
             <div className="col-md-12">
               <Form.Item
                 name="caseStudyResponse"
-                label="HOW WOULD YOU HANDLE THIS SITUATION AS A LEADER?"
+                label="How would you handle this situation as a leader?"
                 rules={[{ required: true, message: "This field is required" }]}
               >
                 <Input.TextArea 
                   rows={8} 
                   placeholder="Please describe how you would handle this sensitive situation as a leader. Consider aspects like conflict resolution, empathy, communication, and maintaining a positive club environment."
-                  className="min-h-[200px]"
+                  className="min-h-[100px]!"
                 />
               </Form.Item>
             </div>

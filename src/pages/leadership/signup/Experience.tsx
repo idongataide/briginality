@@ -87,7 +87,7 @@ const Experience = () => {
                   label="If you answered yes to the previous question, please tell us more about your leadership experience!"
                   rules={[{ required: true, message: "This field is required" }]}
                 >
-                  <Input.TextArea rows={6} placeholder="Describe your leadership experience" />
+                  <Input.TextArea rows={10} className="min-h-[80px]!" placeholder="Describe your leadership experience" />
                 </Form.Item>
               </div>
             )}

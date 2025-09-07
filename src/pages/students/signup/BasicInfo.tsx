@@ -8,6 +8,7 @@ import { useOnboardingStore } from "@/global/store";
 import { Country, ICountry } from "country-state-city";
 import dayjs from "dayjs";
 import { useRegions } from "@/hooks/useEnums";
+import { FaAngleLeft } from "react-icons/fa";
 
 
 const BasicInfo = () => {
@@ -103,7 +104,10 @@ const BasicInfo = () => {
     <div className="col-md-12 mx-auto">
       <div className="bg-white rounded10">
         <div className="content-top-agile text-left! mb-30">
-          <h2 className="text-[#1C2023]">Basic Info</h2>
+          <h2 className="text-[#1C2023] flex items-center">  <FaAngleLeft 
+            onClick={() => {
+            navigate(-1);
+          }} className="me-1 cursor-pointer" /> Basic Info</h2>
         </div>
         <div className="p-0">
           <Form layout="vertical" form={form} onFinish={onFinish} className="row">

@@ -40,6 +40,8 @@ const Students: FC = () => {
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<StudentData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 8 });
+
 
   const handleApprove = async () => {
     if (!selectedApplication) return;
@@ -90,11 +92,16 @@ const Students: FC = () => {
   };
 
   const columns: ColumnsType<StudentData> = [
-    {
+   {
       title: 'S/N',
-      dataIndex: 'id',
-      key: 'id',
-      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+      key: 'serial',
+      render: (_text, _record, index) => {
+        return (
+          <span className="text-[#667085] font-[500]">
+            {(pagination.current - 1) * pagination.pageSize + index + 1}
+          </span>
+        );
+      },
     },
     {
       title: 'Full Name',
@@ -235,18 +242,25 @@ const Students: FC = () => {
         <h3 className="text-md font-semibold text-[#667085]">Student List</h3>
       </div>
       <div className="border-[0.6px] bg-[#FFFFFF] rounded-lg mb-3 border-[#EAEAEA]">
-        <Table
+       <Table
           columns={columns}
           dataSource={StudentData}
           locale={{ emptyText: customEmpty }}
           size="small"
-          className="custom-table text-[14px]"
+          className="custom-table overflow-x-scroll text-[14px]"
+          rowKey="id"
           pagination={{
-            pageSize: 8,
+            ...pagination,
             showSizeChanger: false,
             showQuickJumper: false,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
           }}
+          onChange={(pag) =>
+            setPagination({
+              current: pag.current ?? 1,
+              pageSize: pag.pageSize ?? 8,
+            })
+          }
         />
       </div>
 

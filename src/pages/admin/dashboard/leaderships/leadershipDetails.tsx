@@ -307,11 +307,11 @@ const LeadershipDetails = () => {
                 <nav>
                   <ol className="breadcrumb">
                     <li className="breadcrumb-item">
-                      <a href="#" onClick={() => navigate('/admin/leadership')}>
+                      <a href="#" onClick={() => navigate('/admin/leaderships')}>
                         <i className="mdi mdi-home-outline" />
                       </a>
                     </li>
-                    <li className="breadcrumb-item" aria-current="page">
+                    <li  onClick={() => navigate('/admin/leaderships')} className="breadcrumb-item cursor-pointer" aria-current="page">
                       Leadership
                     </li>
                     <li className="breadcrumb-item active" aria-current="page">

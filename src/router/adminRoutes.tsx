@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import OnboardingLayout from "@/layouts/OnboardingLayout";
+// import OnboardingLayout from "@/layouts/OnboardingLayout";
 import MainRouter from "./mainRouter";
 import LoadingScreen from "@/layouts/LoadingScreen";
 
@@ -127,7 +127,7 @@ const adminRoutes: RouteObject[] = [
   },
   {
     path: "/admin/login",
-    element: <OnboardingLayout />,
+    // element: <OnboardingLayout />,
     children: [
       { 
         index: true, 

@@ -99,8 +99,8 @@ const FinalNote = () => {
         if (response?.status === "success") {
           toast.success("Signup successful! Please check your email for verification.");
           clearLeadershipSignupData();
-          setNavPath("success");
-          navigate("/leadership/success");
+          setNavPath("leadership-success");
+          navigate("/leadership/signup");
         } else {
           toast.error("Signup failed. Please try again.");
         }
@@ -126,7 +126,7 @@ const FinalNote = () => {
                 label="IS THERE ANYTHING ELSE YOU'D LIKE US TO KNOW ABOUT YOU? (OPTIONAL)"
               >
                 <Input.TextArea 
-                  rows={4} 
+                  rows={10} className="min-h-[80px]!"
                   placeholder="Share any additional information that might be relevant to your application..."
                 />
               </Form.Item>

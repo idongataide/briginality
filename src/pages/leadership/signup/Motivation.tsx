@@ -23,7 +23,6 @@ const Motivation = () => {
 
   const onFinish = async (values: any) => {
     try {
-      console.log('sdsdsd')
       setLoading(true);
       setLeadershipSignupData("motivation", values);
       toast.success("Motivation saved");

@@ -7,6 +7,7 @@ import { useRoleApplications, useApproveRoleApplication, useRejectRoleApplicatio
 import ConfirmationModal from '@/components/DeleteConfirmationModal';
 import RejectConfirmationModal from '@/components/RejectConfirmationModal';
 import { message } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 interface LeadershipData {
   key: string;
@@ -38,6 +39,8 @@ const Leadership: FC = () => {
   const [rejectModalVisible, setRejectModalVisible] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<LeadershipData | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({ current: 1, pageSize: 8 });
+  const navigate = useNavigate(); 
 
   const handleApprove = async () => {
     if (!selectedApplication) return;
@@ -73,6 +76,11 @@ const Leadership: FC = () => {
     }
   };
 
+  
+  const handleViewProfile = (leaderId: number) => {
+    navigate(`/admin/leadership/${leaderId}`);
+  };
+
   const openApproveModal = (record: LeadershipData) => {
     setSelectedApplication(record);
     setApproveModalVisible(true);
@@ -84,11 +92,16 @@ const Leadership: FC = () => {
   };
 
   const columns: ColumnsType<LeadershipData> = [
-    {
+   {
       title: 'S/N',
-      dataIndex: 'id',
-      key: 'id',
-      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+      key: 'serial',
+      render: (_text, _record, index) => {
+        return (
+          <span className="text-[#667085] font-[500]">
+            {(pagination.current - 1) * pagination.pageSize + index + 1}
+          </span>
+        );
+      },
     },
     {
       title: 'Full Name',
@@ -96,6 +109,24 @@ const Leadership: FC = () => {
       key: 'name',
       render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
     },
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      key: 'email',
+      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+    },
+    {
+      title: 'Age',
+      dataIndex: 'age',
+      key: 'age',
+      render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+    },
+    // {
+    //   title: 'Email',
+    //   dataIndex: 'email',
+    //   key: 'email',
+    //   render: (text) => <span className="text-[#667085] font-[500]">{text}</span>,
+    // },
     {
       title: 'Role',
       dataIndex: 'role',
@@ -161,7 +192,7 @@ const Leadership: FC = () => {
           <Button
             type="primary"
             size="small"
-            onClick={() => window.open(`/admin/leadership/${record.id}`)}
+            onClick={() => handleViewProfile(record.id)}
             className="border-blue-500 text-blue-500 hover:bg-blue-50"
           >
             <EyeOutlined className="mr-2" />
@@ -241,13 +272,20 @@ const Leadership: FC = () => {
           dataSource={leadershipData}
           locale={{ emptyText: customEmpty }}
           size="small"
-          className="custom-table text-[14px]"
+          className="custom-table overflow-x-scroll text-[14px]"
+          rowKey="id"
           pagination={{
-            pageSize: 8,
+            ...pagination,
             showSizeChanger: false,
             showQuickJumper: false,
             showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
           }}
+          onChange={(pag) =>
+            setPagination({
+              current: pag.current ?? 1,
+              pageSize: pag.pageSize ?? 8,
+            })
+          }
         />
       </div>
 

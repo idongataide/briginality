@@ -46,24 +46,26 @@ const DashboardLayout: React.FC = () => {
   const adminNavData = [
     { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
     { id: 2, name: "Students", icon: <FaUserGraduate />, URL: "students" },
-    { id: 2, name: "Waitlist", icon: <FaUserGraduate />, URL: "waitlist" },
-    { id: 3, name: "Leadership", icon: <FaUserTie />, URL: "leaderships" },
-    { id: 4, name: "Regional Club", icon: <FaList />, URL: "regional-clubs" },
-    { id: 4, name: "Clubs", icon: <FaList />, URL: "clubs" },
-    { id: 5, name: "Bridge Points", icon: <FaCoins />, URL: "bridge-points" },
-    { id: 6, name: "Profile", icon: <FaUser />, URL: "profile" },
+    { id: 3, name: "Waitlist", icon: <FaUserGraduate />, URL: "waitlist" },
+    { id: 4, name: "Leadership", icon: <FaUserTie />, URL: "leaderships" },
+    { id: 5, name: "Regional Club", icon: <FaList />, URL: "regional-clubs" },
+    { id: 6, name: "Clubs", icon: <FaList />, URL: "clubs" },
+    { id: 7, name: "Bridge Points", icon: <FaCoins />, URL: "bridge-points" },
+    { id: 8, name: "Profile", icon: <FaUser />, URL: "profile" },
   ];
+
 
   const studentNavData = [
     { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },
     { id: 2, name: "Meetings", icon: <FaCalendar />, URL: "meetings" },
     { id: 3, name: "Calendar", icon: <FaCalendar />, URL: "calendar" },
     { id: 4, name: "Notices", icon: <FaBell />, URL: "notices" },
-    { id: 3, name: "Clubs", icon: <FaUsers />, URL: "clubs" },
-    { id: 3, name: "Chat", icon: <FaMessage />, URL: "chat" },
-    { id: 4, name: "Points", icon: <FaCoins />, URL: "points" },
-    { id: 5, name: "Profile", icon: <FaUser />, URL: "profile" },
+    { id: 5, name: "Clubs", icon: <FaUsers />, URL: "clubs" },
+    { id: 6, name: "Chat", icon: <FaMessage />, URL: "chat" },
+    { id: 7, name: "Points", icon: <FaCoins />, URL: "points" },
+    { id: 8, name: "Profile", icon: <FaUser />, URL: "profile" },
   ];
+
 
   const leadershipNavData = [
     { id: 1, name: "Dashboard", icon: <FaHome />, URL: "dashboard" },

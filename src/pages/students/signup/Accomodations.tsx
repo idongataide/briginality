@@ -125,7 +125,7 @@ const Accommodations = () => {
         message.success("Signup successful! Please check your email for verification.");
         clearStudentSignupData();
         setNavPath("success");
-        navigate("/signup");
+        navigate("/student/signup");
       } else {
         message.error("Signup failed. Please try again.");
       }

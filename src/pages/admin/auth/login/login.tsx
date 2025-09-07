@@ -66,22 +66,27 @@ const AdminLogin = () => {
 
   return (
     <>
-      <div className="col-12">
-        <div className="row justify-content-center g-0">
+     <div className="col-12 bg-red-600 d-flex justify-content-center align-items-center min-h-[100vh]">
+        <div className="row justify-content-center g-0 w-[500px]"> {/* Adjust width here */}
           <div className="col-12">
-            <div className="bg-white rounded10">
-            <div className="content-top-agile text-left! mb-20">
-                <h2 className="text-[#1C2023]">Welcome Back Admin</h2>
+            <div className="bg-white rounded10 p-40 w-full">
+              <div className="content-top-agile text-center! mb-20">
+                <img
+                  src="/images/logo.png"
+                  alt="logo"
+                  className="w-[250px] mb-4 mx-auto"
+                />
+                <h2 className="text-[#1C2023] font-semibold!">Welcome Back Admin</h2>
                 <p className="mb-0 text-lg">Sign in to continue as admin.</p>
               </div>
-              <div className="">
+              <div>
                 <Form layout="vertical" onFinish={onFinish}>
                   <Form.Item
                     name="email"
                     label="Email"
                     rules={[
-                      { required: true, message: 'Please input your email!' },
-                      { type: 'email', message: 'Invalid email format!' },
+                      { required: true, message: "Please input your email!" },
+                      { type: "email", message: "Invalid email format!" },
                     ]}
                   >
                     <Input placeholder="Email" />
@@ -90,24 +95,24 @@ const AdminLogin = () => {
                   <Form.Item
                     name="password"
                     label="Password"
-                    rules={[{ required: true, message: 'Please input your password!' }]}
+                    rules={[{ required: true, message: "Please input your password!" }]}
                   >
                     <Input.Password
                       placeholder="Password"
-                      iconRender={visible =>
+                      iconRender={(visible) =>
                         visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
                       }
                     />
                   </Form.Item>
 
-                  <div className="d-flex justify-content-end mb-3">
+                  {/* <div className="d-flex justify-content-end mb-3">
                     <a
                       className="text-[#F9607F]"
                       onClick={() => navigate("/login/forgot-password")}
                     >
                       Forgot Password?
                     </a>
-                  </div>
+                  </div> */}
 
                   <Form.Item>
                     <Button
@@ -121,21 +126,12 @@ const AdminLogin = () => {
                   </Form.Item>
                 </Form>
 
-                <div className="text-center mt-3">
-                  <p className="mb-0 text-[#7D8489]" onClick={() => {
-                        navPath.setNavPath("basic-info");
-                    }}>
-                    Don't have an account?{" "}
-                    <Link to="/signup" className="text-[#F9607F]">
-                      Sign Up
-                    </Link>
-                  </p>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </>
   );
 };
