@@ -2,7 +2,7 @@
 import React from "react";
 import { Form, Input, Button } from "antd";
 import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { login } from "@/api/authAPI";
 import toast from "react-hot-toast";
 import { setNavData } from "../common/setNavData";

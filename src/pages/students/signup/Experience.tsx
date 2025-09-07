@@ -31,7 +31,7 @@ const Experiences = () => {
       toast.success("Experience information saved successfully");
       
       setNavPath("accomodations");
-      navigate('/signup');
+      navigate('/student/signup');
     } catch (error) {
       toast.error("An error occurred");
     } finally {
@@ -63,7 +63,7 @@ const Experiences = () => {
                 label="What do you hope to gain from joining Bridginality? (e.g., new friends, learning skills, socializing)"
                 rules={[{ required: true, message: "This field is required" }]}
               >
-                <Input.TextArea rows={4} placeholder="Enter your expectations" />
+                <Input.TextArea rows={10} className="min-h-[80px]!" placeholder="Enter your expectations" />
               </Form.Item>
             </div>
 

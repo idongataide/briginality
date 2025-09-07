@@ -45,7 +45,7 @@ const ClubPreference = () => {
       
       // Redirect to next section
       setNavPath("experience");
-      navigate('/signup')
+      navigate('/student/signup')
 
     } catch (error) {
       toast.error("An error occurred");

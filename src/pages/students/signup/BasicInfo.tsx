@@ -92,7 +92,7 @@ const BasicInfo = () => {
 
       // Redirect to next section
       setNavPath("club-preference");
-      navigate('/signup')
+      navigate('/student/signup')
     } catch (error) {
       toast.error("An error occurred");
     } finally {

@@ -71,7 +71,7 @@ const Accommodations = () => {
     return {
       name: basicInfo?.fullName || "",
       email: basicInfo?.email || "",
-      parent_email: basicInfo?.guardianEmail || basicInfo?.email || "",
+      parent_email: basicInfo?.guardianEmail || "",
       age: basicInfo?.dateOfBirth ? calculateAge(basicInfo.dateOfBirth) || null : null,
       pronouns: basicInfo?.pronouns || "",
       country_timezone: basicInfo?.country || "",
@@ -180,7 +180,7 @@ const Accommodations = () => {
                   label="If you answered 'Yes', please tell us how we can accommodate your needs!"
                   rules={[{ required: true, message: "Please provide details." }]}
                 >
-                  <Input.TextArea rows={3} placeholder="Your answer" />
+                  <Input.TextArea rows={10} className="min-h-[80px]!" placeholder="Your answer" />
                 </Form.Item>
               )}
             </div>
@@ -215,7 +215,7 @@ const Accommodations = () => {
                   label="If you answered 'Yes', please tell us how we can accommodate your needs!"
                   rules={[{ required: true, message: "Please provide details." }]}
                 >
-                  <Input.TextArea rows={3} placeholder="Your answer" />
+                  <Input.TextArea rows={10} className="min-h-[80px]!" placeholder="Your answer" />
                 </Form.Item>
               )}
             </div>
