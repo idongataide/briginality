@@ -48,7 +48,7 @@ const LeadershipLogin = () => {
               : res?.data?.role
               ? [res.data.role]
               : [];
-            setRole(roles[0] ?? '');
+            setRole(roles ?? '');
             const clubs = Array.isArray(res?.data?.presided_clubs) ? res.data.presided_clubs : [];
             setPresidedClubs(clubs as any);
           } catch (_) {}
@@ -59,7 +59,7 @@ const LeadershipLogin = () => {
           );
           navigate("/leadership/dashboard");
         }  else {
-          toast.error(res?.response?.data?.msg);
+          toast.error(res?.response?.data?.message);
         }
       })
       .catch((error) => {

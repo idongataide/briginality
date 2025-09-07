@@ -324,7 +324,7 @@ const LeadershipDetails = () => {
             <div className="ms-auto">
               <Button 
                 type="primary" 
-                onClick={() => navigate('/admin/leadership')}
+                onClick={() => navigate('/admin/leaderships')}
                 className="me-2 h-[43px]!"
               >
                 Back to Leadership

@@ -54,7 +54,7 @@ const Login = () => {
           );
           navigate("/students/dashboard");
         }  else {
-          toast.error(res?.response?.data?.msg);
+          toast.error(res?.response?.data?.message);
         }
       })
 

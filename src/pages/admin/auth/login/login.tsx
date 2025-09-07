@@ -53,7 +53,7 @@ const AdminLogin = () => {
           );
           navigate("/admin/dashboard");
         }  else {
-          toast.error(res?.response?.data?.msg);
+          toast.error(res?.response?.data?.message);
         }
       })
       .catch((error) => {

@@ -4,7 +4,7 @@ interface iData {
       email?: string;
       username?: string;
       refresh?: string;
-      role?: string;
+      role: string[];  
       first_name?: string;
       avatar?: string;
       last_name?: string;
@@ -17,7 +17,7 @@ interface iData {
     setNavPath: (path: string) => void;
     setEmail: (email: string) => void;
     setToken: (apiToken: string) => void;
-    setRole: (role: string) => void;
+    setRole: (role: string[]) => void;
     setAvatar: (avatar: string) => void;
     setUserName: (userName: string) => void;
     setFirstName: (firstName: string) => void;

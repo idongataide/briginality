@@ -37,8 +37,8 @@ interface LeadershipStoreState {
     setToken: (token: string | null) => void;
     email: string;
     setEmail: (email: string) => void;
-    role: string;
-    setRole: (role: string) => void;
+    role: string[];  
+    setRole: (role: string[]) => void;
     userName: string;
     setUserName: (userName: string) => void;
     isVerified: boolean;
@@ -101,8 +101,8 @@ export const useLeadershipStore = create<LeadershipStoreState>()(
         setToken: (token: string | null) => set({ token }),
         email: "",
         setEmail: (email: string) => set({ email }),
-        role: "",
-        setRole: (role: string) => set({ role }),
+        role: [],
+        setRole: (role: string[]) => set({ role }),
         userName: "",
         setUserName: (userName: string) => set({ userName }),
         isVerified: false,
