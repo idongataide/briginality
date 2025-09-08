@@ -19,7 +19,8 @@ const MainRouter: React.FC = () => {
         navigate("/students/dashboard", { replace: true });
       } else if (
         leadershipRole?.includes("club-president") || 
-        leadershipRole?.includes("club-leader")
+        leadershipRole?.includes("leader")||
+        leadershipRole?.includes("club-vice-president")
       ) {
         navigate("/leadership/dashboard", { replace: true });
       } else if (onboardingRole?.includes("admin")) {
