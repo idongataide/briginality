@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import OnboardingLayout from "../layouts/OnboardingLayout";
 import LoadingScreen from "@/layouts/LoadingScreen";
 import MainRouter from "./mainRouter";
+import ClubMembers from "@/pages/leadership/dashboard/clubMembers/clubMembers";
 
 // Lazy load all leadership components
 const LeadershipLogin = lazy(() => import("@/pages/leadership/login/login"));
@@ -85,6 +86,14 @@ const leadershipRoutes: RouteObject[] = [
           </Suspense>
         ),
       },     
+      {
+        path: "/leadership/clubs",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <ClubMembers />
+          </Suspense>
+        ),
+      }, 
       {
         path: "/leadership/chat",
         element: (

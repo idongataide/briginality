@@ -11,6 +11,7 @@ import CalendarPage from "@/pages/students/dashboard/calendar/calendar";
 import GroupChat from "@/pages/students/dashboard/chat/chat";
 import ProfilePage from "@/pages/students/dashboard/profile/profile";
 import Notices from "@/pages/students/dashboard/notices/notices";
+import ClubMembers from "@/pages/students/dashboard/clubMembers/clubMembers";
 
 const studentRoutes: RouteObject[] = [
   {
@@ -64,7 +65,15 @@ const studentRoutes: RouteObject[] = [
             <Meetings />
           </Suspense>
         ),
-      },     
+      },   
+      {
+        path: "/students/clubs",
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <ClubMembers />
+          </Suspense>
+        ),
+      },   
       {
         path: "/students/chat",
         element: (

@@ -109,4 +109,16 @@ export const rejectRoleApplication = async (applicationId: string, notes?: strin
   }
 };
 
+
+export const fetchClubMembers = async (clubId: string) => {
+  try {
+    return await axiosAPIInstance
+      .get(`/club/members/${clubId}`)
+      .then((res) => {
+        return res?.data;
+      });
+  } catch (error) {
+    return error;
+  }
+};
   

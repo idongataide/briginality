@@ -14,15 +14,21 @@ const MainRouter: React.FC = () => {
 
 
   useEffect(() => {
-   if (onboardingToken || leadershipToken) {
+    if (leadershipToken) {
+      if (leadershipRole?.includes("club-president") ||
+          leadershipRole?.includes("leader") ||
+          leadershipRole?.includes("club-vice-president")) {
+        navigate("/leadership/dashboard", { replace: true });
+      } else if (onboardingRole?.includes("club-member")) {
+        navigate("/students/dashboard", { replace: true });
+      } else if (onboardingRole?.includes("admin")) {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate("/role-selection", { replace: true });
+      }
+    } else if (onboardingToken) {
       if (onboardingRole?.includes("club-member")) {
         navigate("/students/dashboard", { replace: true });
-      } else if (
-        leadershipRole?.includes("club-president") || 
-        leadershipRole?.includes("leader")||
-        leadershipRole?.includes("club-vice-president")
-      ) {
-        navigate("/leadership/dashboard", { replace: true });
       } else if (onboardingRole?.includes("admin")) {
         navigate("/admin/dashboard", { replace: true });
       } else {
