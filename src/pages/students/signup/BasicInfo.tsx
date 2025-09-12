@@ -90,7 +90,6 @@ const BasicInfo = () => {
       console.log("Form values:", dataToSave);
       toast.success("Basic information saved successfully");
 
-      // Redirect to next section
       setNavPath("club-preference");
       navigate('/student/signup')
     } catch (error) {

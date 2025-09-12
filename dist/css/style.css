@@ -31921,5 +31921,8 @@ img.away, img.busy, img.offline, img.online {
 .ant-modal-content{
   padding: 30px !important;
 }
+.ant-table-content{
+ overflow-x: scroll !important;
+}
 
 /*# sourceMappingURL=style.css.map */
