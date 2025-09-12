@@ -35,7 +35,7 @@ const BasicInfo = () => {
       if (formData.dateOfBirth && typeof formData.dateOfBirth === 'string') {
         try {
           const dateObj = dayjs(formData.dateOfBirth);
-          if (dateObj.isValid()) {
+          if (dateObj && dateObj.isValid()) {
             formData.dateOfBirth = dateObj;
             
             // Check if guardian email should be shown
