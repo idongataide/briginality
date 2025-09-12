@@ -12,14 +12,18 @@ const Success = () => {
         <div className="flex flex-col items-center w-full">
             <Helmet>
                 <meta charSet="utf-8" />
-                <title>Leadership: Password Reset Success</title>
+                <title>Signup Successful</title>
             </Helmet>
             <div className="flex justify-center m-auto mb-1">
                 <img src={Images.success} alt="Success" className="h-100" />
             </div>
             <div className="text-center ">
                 <h2 className="text-2xl font-bold! text-[#475467] mb-3!">Success</h2>
-                <p className="text-md font-medium text-[#667085]"> Thank you for taking time to complete this application, <br/> it means a lot. </p>
+                <p className="text-md font-medium text-[#667085]">
+                   Thank you for taking time to complete this application, <br /> 
+                    it means a lot. <br /> 
+                    A confirmation email has been sent to you while you are awaiting approval.
+                </p>       
             </div>
             <Button
                 type="primary"

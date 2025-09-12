@@ -59,7 +59,7 @@ const ClubPreference = () => {
       <div className="bg-white rounded10">
         <div className="content-top-agile text-left! mb-30">
           <h2 className="text-[#1C2023]">Club Preference</h2>
-          <p>Select up to 4 clubs—one from each category: STEM, Creative & Cultural, Civic & Intellectual, and Life Skills.</p>
+          <p>Select up to 4 clubs—one from each category: STEM, Creative & Cultural, Civic & Intellectual, and Life Skills. When chosen, if space is available, we will place you in any one you choose.</p>
         </div>
         <div className="p-0">
           <Form layout="vertical" form={form} onFinish={onFinish} className="row">
