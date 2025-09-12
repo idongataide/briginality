@@ -48,8 +48,9 @@ const Availability = () => {
                 label={
                   <span>
                     Are you available for:<br />
-                    - A 2-week online training period?<br />
-                    - A 1-year volunteer leadership role (approx. 2-4 hours/week)?
+                    - available for a 1 year volunteer leadership position<br />
+                    - proficient in using zoom <br />
+                    - equipped with stable, reliable internet<br />
                   </span>
                 }
                 rules={[{ required: true, message: "This field is required" }]}
