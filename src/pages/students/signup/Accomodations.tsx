@@ -226,7 +226,7 @@ const Accommodations = () => {
                   type="default"
                   onClick={() => {
                     setNavPath("experience");
-                    navigate('/signup');
+                    navigate('/student/signup');
                   }}
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >

@@ -73,7 +73,7 @@ const Experiences = () => {
                   type="default"
                   onClick={() => {
                     setNavPath("club-preference");   
-                    navigate('/signup');
+                    navigate('/student/signup');
                   }}               
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >

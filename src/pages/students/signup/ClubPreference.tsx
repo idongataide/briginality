@@ -85,7 +85,7 @@ const ClubPreference = () => {
                   type="default"
                   onClick={() => {
                     setNavPath("basic-info");   
-                    navigate('/signup');
+                    navigate('/student/signup');
                   }}               
                   className="w-[50%] mt-4 font-medium h-[42px]!"
                 >
